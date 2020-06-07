@@ -1,11 +1,17 @@
 package pixelstudio.window;
 
-import java.awt.Color;
+import pixelstudio.Constants;
+
 import java.awt.Dimension;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.border.Border;
 
 public class Main {
     private static JFrame window = new JFrame("Pixel Studio");
@@ -15,43 +21,49 @@ public class Main {
     private static JPanel infoPanel = new JPanel();
     private static JPanel controlPanel = new JPanel();
     
-    private static final int WINDOW_WIDTH = 800;
-    private static final int WINDOW_HEIGHT = 400;
-    private static final Dimension WINDOW_DIMENSION = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT);
-    
-    private static final Color BACKGROUND_COLOR = new Color(64, 64, 64, 255);
-    private static final Color EDITOR_BACKGROUND_COLOR = new Color(0, 0, 255, 255);
-    private static final Color INFO_BACKGROUND_COLOR = new Color(0, 255, 0, 255);
-    private static final Color CONTROL_BACKGROUND_COLOR = new Color(255, 0, 0, 255);
+    private static Border panelBorder = BorderFactory.createMatteBorder(5, 5, 5, 5, Constants.BACKGROUND_COLOR);
 
-    private static final void INITIALIZE_WINDOW() {
-        window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        window.setResizable(true);
-        window.setSize(WINDOW_DIMENSION);
-        
-        windowContentPanel.setBackground(BACKGROUND_COLOR);
-        windowContentPanel.setLayout(new BoxLayout(windowContentPanel, BoxLayout.X_AXIS));
-        windowContentPanel.setSize(WINDOW_DIMENSION);
-        
-        editorPanel.setBackground(EDITOR_BACKGROUND_COLOR);
-        windowContentPanel.add(editorPanel);
-        
-        infoControlPanel.setLayout(new BoxLayout(infoControlPanel, BoxLayout.Y_AXIS));
-        
-        infoPanel.setBackground(INFO_BACKGROUND_COLOR);
+    public Main() {
+        editorPanel.setBackground(Constants.EDITOR_BACKGROUND_COLOR);
+    	editorPanel.setBorder(panelBorder);
+    	editorPanel.setPreferredSize(Constants.EDITOR_DIMENSION);
+
+        infoPanel.setBackground(Constants.INFO_BACKGROUND_COLOR);
+        infoPanel.setBorder(panelBorder);
+        infoPanel.setPreferredSize(Constants.INFO_DIMENSION);
+
+        controlPanel.setBackground(Constants.CONTROL_BACKGROUND_COLOR);
+        controlPanel.setBorder(panelBorder);
+        controlPanel.setPreferredSize(Constants.CONTROL_DIMENSION);
+
+        infoControlPanel.setLayout(new BoxLayout(infoControlPanel, BoxLayout.PAGE_AXIS));
         infoControlPanel.add(infoPanel);
-        
-        controlPanel.setBackground(CONTROL_BACKGROUND_COLOR);
         infoControlPanel.add(controlPanel);
         
+    	windowContentPanel.setBackground(Constants.BACKGROUND_COLOR);
+        windowContentPanel.setLayout(new BoxLayout(windowContentPanel, BoxLayout.LINE_AXIS));
+    	windowContentPanel.setBorder(panelBorder);
+        windowContentPanel.add(editorPanel);
         windowContentPanel.add(infoControlPanel);
-        
-        window.add(windowContentPanel);
-
+        windowContentPanel.setOpaque(true);
+    }
+    
+    private static void createAndShowGUI() {
+        window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        window.setResizable(true);
+        window.setSize(Constants.WINDOW_DIMENSION);
+        window.setContentPane(windowContentPanel);
+        window.pack();
         window.setVisible(true);
     }
 
     public static void main(String[] args) {
-        INITIALIZE_WINDOW();
+        new Main();
+        
+    	SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI();
+            }
+        });
     }
 }
