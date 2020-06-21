@@ -31,8 +31,8 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 public class Window {
-    public static final int WINDOW_WIDTH = 900;
-	public static final int WINDOW_HEIGHT = 800;
+    public static final int WINDOW_WIDTH = 600;
+	public static final int WINDOW_HEIGHT = 600;
     public static final int BORDER_SIZE = 5;
 	public static final int PADDING = BORDER_SIZE * 2;
 	public static final Dimension WINDOW_DIMENSION = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -86,15 +86,16 @@ public class Window {
     private static JPanel editorPanel = new JPanel();
     
     private static JPanel upperToolbarPanel = new JPanel();
-    private static JButton chooseColorButton = new JButton("           ");
-    private static JLabel selectedPaintColorLabel = new JLabel("#000000");
-    private static JButton selectModeButton = new JButton("Select");
-    private static JButton paintModeButton = new JButton("Paint");
-    
-    private static JPanel lowerToolbarPanel = new JPanel();
     private static JLabel helpTextLabel = new JLabel("Help text");
     private static JLabel titleLabel = new JLabel("Title");
     private static JButton saveButton = new JButton("Save");
+    
+    private static JPanel lowerToolbarPanel = new JPanel();
+    private static JButton selectModeButton = new JButton("Select");
+    private static JButton paintModeButton = new JButton("Paint");
+    private static JButton chooseColorButton = new JButton("           ");
+    private static JLabel selectedPaintColorLabel = new JLabel("#000000");
+    public static Color currentBrushColor = new Color(0, 0, 0, 0);
     
     private static Border panelBorder = BorderFactory.createMatteBorder(
     		BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BACKGROUND_COLOR);
@@ -173,18 +174,21 @@ public class Window {
     	upperToolbarPanel.setBackground(TOOLBAR_BACKGROUND_COLOR);
     	upperToolbarPanel.setBorder(innerPanelBorder);
     	upperToolbarPanel.setPreferredSize(TOOLBAR_DIMENSION);
-        upperToolbarPanel.setLayout(new BoxLayout(upperToolbarPanel, BoxLayout.X_AXIS));
+    	upperToolbarPanel.setLayout(new BoxLayout(upperToolbarPanel, BoxLayout.X_AXIS));
         
-        upperToolbarPanel.add(selectModeButton);
-        upperToolbarPanel.add(paintModeButton);
+        helpTextLabel.setFont(LABEL_FONT);
+        helpTextLabel.setForeground(FOREGROUND_COLOR);
+        upperToolbarPanel.add(helpTextLabel);
         
         upperToolbarPanel.add(Box.createHorizontalGlue());
-
-        selectedPaintColorLabel.setFont(LABEL_FONT);
-        selectedPaintColorLabel.setForeground(FOREGROUND_COLOR);
-        upperToolbarPanel.add(selectedPaintColorLabel);
+        
+        titleLabel.setFont(LABEL_FONT);
+        titleLabel.setForeground(FOREGROUND_COLOR);
+        titleLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        upperToolbarPanel.add(titleLabel);
+        
         upperToolbarPanel.add(Box.createRigidArea(new Dimension(BORDER_SIZE, 0)));
-        upperToolbarPanel.add(chooseColorButton);
+        upperToolbarPanel.add(saveButton);
     }
     
     private static void initializeLowerToolbarPanel() {
@@ -193,19 +197,19 @@ public class Window {
     	lowerToolbarPanel.setPreferredSize(TOOLBAR_DIMENSION);
     	lowerToolbarPanel.setLayout(new BoxLayout(lowerToolbarPanel, BoxLayout.X_AXIS));
         
-        helpTextLabel.setFont(LABEL_FONT);
-        helpTextLabel.setForeground(FOREGROUND_COLOR);
-        lowerToolbarPanel.add(helpTextLabel);
+        lowerToolbarPanel.add(selectModeButton);
+        lowerToolbarPanel.add(paintModeButton);
         
         lowerToolbarPanel.add(Box.createHorizontalGlue());
-        
-        titleLabel.setFont(LABEL_FONT);
-        titleLabel.setForeground(FOREGROUND_COLOR);
-        titleLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        lowerToolbarPanel.add(titleLabel);
-        
+
+        selectedPaintColorLabel.setFont(LABEL_FONT);
+        selectedPaintColorLabel.setForeground(FOREGROUND_COLOR);
+        selectedPaintColorLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        lowerToolbarPanel.add(selectedPaintColorLabel);
         lowerToolbarPanel.add(Box.createRigidArea(new Dimension(BORDER_SIZE, 0)));
-        lowerToolbarPanel.add(saveButton);
+        chooseColorButton.setBackground(currentBrushColor);
+        lowerToolbarPanel.add(chooseColorButton);
+    	
     }
     
     private static void initializeWindow() {
