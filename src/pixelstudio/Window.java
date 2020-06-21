@@ -24,20 +24,22 @@ import javax.swing.border.Border;
 public class Window extends JFrame {
 	public static Window windowInstance;
 	
-    public static final int WINDOW_WIDTH = 600;
-	public static final int WINDOW_HEIGHT = 600;
-    public static final int BORDER_SIZE = 5;
-	public static final int PADDING = BORDER_SIZE * 2;
-	public static final Dimension WINDOW_DIMENSION = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT);
-	public static final Dimension TOOLBAR_DIMENSION = new Dimension(WINDOW_WIDTH, 30+PADDING);
-	public static final Dimension EDITOR_DIMENSION = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT-(TOOLBAR_DIMENSION.height)*2);
+    private static final int WINDOW_WIDTH = 600;
+    private static final int WINDOW_HEIGHT = 600;
+    private static final int BORDER_SIZE = 5;
+    private static final int PADDING = BORDER_SIZE * 2;
+    private static final Dimension WINDOW_DIMENSION = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT);
+    private static final Dimension TOOLBAR_DIMENSION = new Dimension(WINDOW_WIDTH, 30+PADDING);
+    private static final Dimension EDITOR_DIMENSION = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT-(TOOLBAR_DIMENSION.height)*2);
 	
-	public static final Color BACKGROUND_COLOR = new Color(32, 32, 32, 255);
-	public static final Color EDITOR_BACKGROUND_COLOR = new Color(64, 64, 64, 255);
-	public static final Color TOOLBAR_BACKGROUND_COLOR = new Color(64, 64, 64, 255);
-	public static final Color FOREGROUND_COLOR = new Color(255, 255, 255, 255);
-	public static final Color ACCENT_COLOR = new Color(255, 128, 0, 255);
-	public static final Font LABEL_FONT = new Font(Font.DIALOG, Font.PLAIN, 12);
+    private static final Color BACKGROUND_COLOR = new Color(32, 32, 32, 255);
+    private static final Color EDITOR_BACKGROUND_COLOR = new Color(64, 64, 64, 255);
+    private static final Color TOOLBAR_BACKGROUND_COLOR = new Color(64, 64, 64, 255);
+    private static final Color FOREGROUND_COLOR = new Color(255, 255, 255, 255);
+    private static final Color ACCENT_COLOR = new Color(255, 128, 0, 255);
+	
+    private static final Font LABEL_FONT = new Font(Font.DIALOG, Font.PLAIN, 12);
+    private static final Font MONO_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 	
 	private static JFrame window = new JFrame("Pixel Studio");
     private static JPanel windowContentPanel = new JPanel();
@@ -181,6 +183,8 @@ public class Window extends JFrame {
         upperToolbarPanel.add(titleLabel);
         
         upperToolbarPanel.add(Box.createRigidArea(new Dimension(BORDER_SIZE, 0)));
+    	saveButton.setFocusPainted(false);
+    	saveButton.setPreferredSize(new Dimension(100, 30));
         upperToolbarPanel.add(saveButton);
     }
     
@@ -190,18 +194,25 @@ public class Window extends JFrame {
     	lowerToolbarPanel.setPreferredSize(TOOLBAR_DIMENSION);
     	lowerToolbarPanel.setLayout(new BoxLayout(lowerToolbarPanel, BoxLayout.X_AXIS));
         
+    	selectModeButton.setBackground(ACCENT_COLOR);
+    	selectModeButton.setFocusPainted(false);
+    	selectModeButton.setPreferredSize(new Dimension(100, 30));
         lowerToolbarPanel.add(selectModeButton);
+        paintModeButton.setPreferredSize(new Dimension(100, 30));
+        paintModeButton.setFocusPainted(false);
         lowerToolbarPanel.add(paintModeButton);
         
         lowerToolbarPanel.add(Box.createHorizontalGlue());
 
-        selectedPaintColorLabel.setFont(LABEL_FONT);
+        selectedPaintColorLabel.setFont(MONO_FONT);
         selectedPaintColorLabel.setForeground(FOREGROUND_COLOR);
         selectedPaintColorLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         lowerToolbarPanel.add(selectedPaintColorLabel);
         lowerToolbarPanel.add(Box.createRigidArea(new Dimension(BORDER_SIZE, 0)));
         currentBrushColor = Color.BLACK;
         chooseColorButton.setBackground(currentBrushColor);
+        chooseColorButton.setFocusPainted(false);
+		chooseColorButton.setPreferredSize(new Dimension(100, 30));
         chooseColorButton.addActionListener(new ColorChoiceAction());
         lowerToolbarPanel.add(chooseColorButton);
     }
@@ -216,7 +227,7 @@ public class Window extends JFrame {
     }
     
     public static void setPaintColor(Color c) {
-    	selectedPaintColorLabel.setText(Utils.rgbToHex(c));
+    	selectedPaintColorLabel.setText(Utils.rgbToHex(c).toUpperCase());
     	chooseColorButton.setBackground(c);
     }
 
