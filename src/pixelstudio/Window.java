@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -83,13 +84,16 @@ public class Window extends JFrame {
     private static JMenuItem aboutMenuItem = new JMenuItem("About");
     
     private static JPanel editorPanel = new JPanel();
+    private static JPanel editorCanvasPanel = new JPanel();
     private static int editorPixelCountX = 10;
     private static int editorPixelCountY = 10;
+    private static Dimension editorSize = new Dimension(300, 300);
     
     private static JPanel upperToolbarPanel = new JPanel();
     private static JLabel helpTextLabel = new JLabel("Help text");
     private static JLabel titleLabel = new JLabel("Title");
     private static JButton saveButton = new JButton("Save");
+    public static JLabel mousePositionLabel = new JLabel("X:Y");
     
     private static JPanel lowerToolbarPanel = new JPanel();
     private static JButton paintModeButton = new JButton("Paint");
@@ -169,12 +173,14 @@ public class Window extends JFrame {
     	editorPanel.setBackground(EDITOR_BACKGROUND_COLOR);
     	editorPanel.setBorder(editorPanelBorder);
     	editorPanel.setPreferredSize(EDITOR_DIMENSION);
-    	editorPanel.setLayout(new GridLayout(editorPixelCountX, editorPixelCountY));
+    	editorCanvasPanel.setPreferredSize(editorSize);
+    	editorCanvasPanel.setLayout(new GridLayout(editorPixelCountX, editorPixelCountY));
     	for (int i = 0; i < editorPixelCountX; i++) {
     		for (int j = 0; j < editorPixelCountY; j++) {
-    			editorPanel.add(new Pixel());
+    			editorCanvasPanel.add(new Pixel(i, j));
     		}
     	}
+    	editorPanel.add(editorCanvasPanel);
     }
     
     private static void initializeUpperToolbarPanel() {
@@ -223,9 +229,14 @@ public class Window extends JFrame {
         lowerToolbarPanel.add(Box.createHorizontalGlue());
         
         helpTextLabel.setFont(LABEL_FONT);
-        helpTextLabel.setForeground(FOREGROUND_COLOR);
+        helpTextLabel.setForeground(ACCENT_COLOR);
         helpTextLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         lowerToolbarPanel.add(helpTextLabel);
+        lowerToolbarPanel.add(Box.createRigidArea(new Dimension(BORDER_SIZE, 0)));
+        mousePositionLabel.setFont(LABEL_FONT);
+        mousePositionLabel.setForeground(FOREGROUND_COLOR);
+        mousePositionLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        lowerToolbarPanel.add(mousePositionLabel);
     }
     
     private static void initializeWindow() {
@@ -257,10 +268,13 @@ public class Window extends JFrame {
 @SuppressWarnings("serial")
 class Pixel extends JPanel {
 	private Pixel pixel = this;
+	private Border pixelBorder = BorderFactory.createCompoundBorder(
+			BorderFactory.createEmptyBorder(1, 1, 1, 1), 
+			BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
 	
-	public Pixel() {
+	public Pixel(int xLoc, int yLoc) {
 		super();
-		this.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
+		this.setBorder(pixelBorder);
 		this.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) { }
@@ -268,13 +282,21 @@ class Pixel extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				pixel.setBackground(Window.currentBrushColor);
+				Utils.mouseDown = true;
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) { }
+			public void mouseReleased(MouseEvent e) { 
+				Utils.mouseDown = false;
+			}
 
 			@Override
-			public void mouseEntered(MouseEvent e) { }
+			public void mouseEntered(MouseEvent e) { 
+				Window.mousePositionLabel.setText(xLoc + ":" + yLoc);
+				if (Utils.mouseDown) {
+					pixel.setBackground(Window.currentBrushColor);
+				}
+			}
 
 			@Override
 			public void mouseExited(MouseEvent e) { }

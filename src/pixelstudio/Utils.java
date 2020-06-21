@@ -22,4 +22,6 @@ public class Utils {
 		String formatted = Integer.toString(integer, 16);
 		return formatted.length() == 2 ? formatted : "0" + formatted;
 	}
+	
+	public static boolean mouseDown = false;
 }
