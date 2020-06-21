@@ -3,34 +3,27 @@ package pixelstudio;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Label;
-import java.awt.Panel;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 
-public class Window {
+@SuppressWarnings("serial")
+public class Window extends JFrame {
+	public static Window windowInstance;
+	
     public static final int WINDOW_WIDTH = 600;
 	public static final int WINDOW_HEIGHT = 600;
     public static final int BORDER_SIZE = 5;
@@ -207,9 +200,10 @@ public class Window {
         selectedPaintColorLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         lowerToolbarPanel.add(selectedPaintColorLabel);
         lowerToolbarPanel.add(Box.createRigidArea(new Dimension(BORDER_SIZE, 0)));
+        currentBrushColor = Color.BLACK;
         chooseColorButton.setBackground(currentBrushColor);
+        chooseColorButton.addActionListener(new ColorChoiceAction());
         lowerToolbarPanel.add(chooseColorButton);
-    	
     }
     
     private static void initializeWindow() {
@@ -220,9 +214,14 @@ public class Window {
         window.pack();
         window.setVisible(true);
     }
+    
+    public static void setPaintColor(Color c) {
+    	selectedPaintColorLabel.setText(Utils.rgbToHex(c));
+    	chooseColorButton.setBackground(c);
+    }
 
     public static void main(String[] args) {
-        new Window();
+        windowInstance = new Window();
         
     	SwingUtilities.invokeLater(new Runnable() {
             public void run() {
