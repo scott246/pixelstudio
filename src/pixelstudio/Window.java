@@ -4,7 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -12,6 +15,7 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,7 +38,7 @@ public class Window extends JFrame {
     private static final int PADDING = BORDER_SIZE * 2;
     private static final Dimension WINDOW_DIMENSION = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT);
     private static final Dimension TOOLBAR_DIMENSION = new Dimension(WINDOW_WIDTH, 30+PADDING);
-    private static final Dimension EDITOR_DIMENSION = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT-(TOOLBAR_DIMENSION.height)*2);
+    protected static final Dimension EDITOR_DIMENSION = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT-(TOOLBAR_DIMENSION.height)*2);
     private static final Dimension BUTTON_DIMENSION = new Dimension(100, 30);
 	
     private static final Color BACKGROUND_COLOR = new Color(32, 32, 32, 255);
@@ -85,9 +89,12 @@ public class Window extends JFrame {
     
     private static JPanel editorPanel = new JPanel();
     private static JPanel editorCanvasPanel = new JPanel();
+    //TODO: make below variables dynamic
     private static int editorPixelCountX = 10;
     private static int editorPixelCountY = 10;
     private static Dimension editorSize = new Dimension(300, 300);
+    protected static int editorPixelWidth = editorSize.width/editorPixelCountX;
+    protected static int editorPixelHeight = editorSize.height/editorPixelCountY;
     
     private static JPanel upperToolbarPanel = new JPanel();
     private static JLabel helpTextLabel = new JLabel("Help text");
@@ -271,6 +278,8 @@ class Pixel extends JPanel {
 	private Border pixelBorder = BorderFactory.createCompoundBorder(
 			BorderFactory.createEmptyBorder(1, 1, 1, 1), 
 			BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
+	private boolean blank = true;
+	private Color transparent = Color.LIGHT_GRAY;
 	
 	public Pixel(int xLoc, int yLoc) {
 		super();
@@ -280,26 +289,52 @@ class Pixel extends JPanel {
 			public void mouseClicked(MouseEvent e) { }
 
 			@Override
+			public void mouseExited(MouseEvent e) { }
+
+			@Override
 			public void mousePressed(MouseEvent e) {
-				pixel.setBackground(Window.currentBrushColor);
-				Utils.mouseDown = true;
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					blank = false;
+					pixel.setBackground(Window.currentBrushColor);
+					Utils.leftMouseDown = true;
+				}
+				else if (e.getButton() == MouseEvent.BUTTON3) {
+					blank = true;
+					pixel.setBackground(transparent);
+					Utils.rightMouseDown = true;
+				}
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) { 
-				Utils.mouseDown = false;
+			public void mouseReleased(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1)
+					Utils.leftMouseDown = false;
+				else if (e.getButton() == MouseEvent.BUTTON3)
+					Utils.rightMouseDown = false;
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) { 
 				Window.mousePositionLabel.setText(xLoc + ":" + yLoc);
-				if (Utils.mouseDown) {
+				if (Utils.leftMouseDown) {
+					blank = false;
 					pixel.setBackground(Window.currentBrushColor);
 				}
+				else if (Utils.rightMouseDown) {
+					blank = true;
+					pixel.setBackground(transparent);
+				}
 			}
-
-			@Override
-			public void mouseExited(MouseEvent e) { }
 		});
+	}
+	
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		if (blank) {
+			this.setBackground(transparent);
+			g.drawLine(0, 0, Window.editorPixelWidth, Window.editorPixelHeight);
+			g.drawLine(0, Window.editorPixelHeight, Window.editorPixelWidth, 0);
+		}
 	}
 }
