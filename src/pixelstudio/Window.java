@@ -4,18 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,89 +28,104 @@ import javax.swing.border.Border;
 public class Window extends JFrame {
 	public static Window windowInstance;
 	
-    private static final int WINDOW_WIDTH = 600;
-    private static final int WINDOW_HEIGHT = 600;
-    private static final int BORDER_SIZE = 5;
-    private static final int PADDING = BORDER_SIZE * 2;
-    private static final Dimension WINDOW_DIMENSION = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT);
-    private static final Dimension TOOLBAR_DIMENSION = new Dimension(WINDOW_WIDTH, 30+PADDING);
+    protected static final int WINDOW_WIDTH = 600;
+    protected static final int WINDOW_HEIGHT = 600;
+    protected static final int BORDER_SIZE = 5;
+    protected static final int PADDING = BORDER_SIZE * 2;
+    protected static final Dimension WINDOW_DIMENSION = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT);
+    protected static final Dimension TOOLBAR_DIMENSION = new Dimension(WINDOW_WIDTH, 30+PADDING);
     protected static final Dimension EDITOR_DIMENSION = new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT-(TOOLBAR_DIMENSION.height)*2);
-    private static final Dimension BUTTON_DIMENSION = new Dimension(100, 30);
+    protected static final Dimension BUTTON_DIMENSION = new Dimension(100, 30);
 	
-    private static final Color BACKGROUND_COLOR = new Color(32, 32, 32, 255);
-    private static final Color EDITOR_BACKGROUND_COLOR = new Color(64, 64, 64, 255);
-    private static final Color TOOLBAR_BACKGROUND_COLOR = new Color(64, 64, 64, 255);
-    private static final Color FOREGROUND_COLOR = new Color(255, 255, 255, 255);
-    private static final Color ACCENT_COLOR = new Color(255, 128, 0, 255);
+    protected static final Color BACKGROUND_COLOR = new Color(32, 32, 32);
+    protected static final Color EDITOR_BACKGROUND_COLOR = new Color(64, 64, 64);
+    protected static final Color TOOLBAR_BACKGROUND_COLOR = new Color(64, 64, 64);
+    protected static final Color FOREGROUND_COLOR = new Color(255, 255, 255);
+    protected static final Color ACCENT_COLOR = new Color(255, 128, 0, 255);
+    protected static final Color SELECTION_COLOR = new Color(255, 128, 0, 64);
+    protected static final Color TRANSPARENT_COLOR = Color.LIGHT_GRAY;
+    protected static final Color WARNING_COLOR = new Color(255, 255, 0);
 	
-    private static final Font LABEL_FONT = new Font(Font.DIALOG, Font.PLAIN, 12);
-    private static final Font MONO_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 12);
+    protected static final Font LABEL_FONT = new Font(Font.DIALOG, Font.PLAIN, 12);
+    protected static final Font MONO_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 	
-	private static JFrame window = new JFrame("Pixel Studio");
-    private static JPanel windowContentPanel = new JPanel();
+	protected static JFrame window = new JFrame("Pixel Studio");
+    protected static JPanel windowContentPanel = new JPanel();
     
-    private static JMenuBar menuBar = new JMenuBar();
-    private static JMenu fileMenu = new JMenu("File");
-    private static JMenuItem newMenuItem = new JMenuItem("New");
-    private static JMenuItem openMenuItem = new JMenuItem("Open");
-    private static JMenuItem saveMenuItem = new JMenuItem("Save");
-    private static JMenuItem saveAsMenuItem = new JMenuItem("Save As");
-    private static JMenuItem preferencesMenuItem = new JMenuItem("Preferences");
-    private static JMenuItem exportMenuItem = new JMenuItem("Export");
-    private static JMenuItem exitMenuItem = new JMenuItem(new ExitAction());
+    protected static JMenuBar menuBar = new JMenuBar();
+    protected static JMenu fileMenu = new JMenu("File");
+    protected static JMenuItem newMenuItem = new JMenuItem("New");
+    protected static JMenuItem openMenuItem = new JMenuItem("Open");
+    protected static JMenuItem saveMenuItem = new JMenuItem("Save");
+    protected static JMenuItem saveAsMenuItem = new JMenuItem("Save As");
+    protected static JMenuItem preferencesMenuItem = new JMenuItem("Preferences");
+    protected static JMenuItem exportMenuItem = new JMenuItem("Export");
+    protected static JMenuItem exitMenuItem = new JMenuItem(new ExitAction());
     
-    private static JMenu editMenu = new JMenu("Edit");
-    private static JMenuItem undoMenuItem = new JMenuItem("Undo");
-    private static JMenuItem redoMenuItem = new JMenuItem("Redo");
-    private static JMenuItem propertiesMenuItem = new JMenuItem("Properties");
-    private static JMenuItem fillMenuItem = new JMenuItem("Fill");
-    private static JMenuItem replaceColorMenuItem = new JMenuItem("Replace Color");
-    private static JMenuItem dupeMenuItem = new JMenuItem("Dupe");
-    private static JMenu flipMenu = new JMenu("Flip");
-    private static JMenuItem flipHorizontalMenuItem = new JMenuItem("Horizontally");
-    private static JMenuItem flipVerticalMenuItem = new JMenuItem("Vertically");
-    private static JMenuItem flipDiagonalAscMenuItem = new JMenuItem("Diagonally (Ascending)");
-    private static JMenuItem flipDiagonalDescMenuItem = new JMenuItem("Diagonally (Descending)");
-    private static JMenu rotateMenu = new JMenu("Rotate");
-    private static JMenuItem rotate90MenuItem = new JMenuItem("90°");
-    private static JMenuItem rotate180MenuItem = new JMenuItem("180°");
-    private static JMenuItem rotate270MenuItem = new JMenuItem("270°");
-    private static JMenuItem shiftMenuItem = new JMenuItem("Shift");
-    private static JMenuItem cropMenuItem = new JMenuItem("Crop");
-    private static JMenuItem clearMenuItem = new JMenuItem("Clear");
+    protected static JMenu editMenu = new JMenu("Edit");
+    protected static JMenuItem undoMenuItem = new JMenuItem("Undo");
+    protected static JMenuItem redoMenuItem = new JMenuItem("Redo");
+    protected static JMenuItem propertiesMenuItem = new JMenuItem("Properties");
+    protected static JMenuItem fillMenuItem = new JMenuItem("Fill");
+    protected static JMenuItem replaceColorMenuItem = new JMenuItem("Replace Color");
+    protected static JMenuItem dupeMenuItem = new JMenuItem("Dupe");
+    protected static JMenu flipMenu = new JMenu("Flip");
+    protected static JMenuItem flipHorizontalMenuItem = new JMenuItem("Horizontally");
+    protected static JMenuItem flipVerticalMenuItem = new JMenuItem("Vertically");
+    protected static JMenuItem flipDiagonalAscMenuItem = new JMenuItem("Diagonally (Ascending)");
+    protected static JMenuItem flipDiagonalDescMenuItem = new JMenuItem("Diagonally (Descending)");
+    protected static JMenu rotateMenu = new JMenu("Rotate");
+    protected static JMenuItem rotate90MenuItem = new JMenuItem("90°");
+    protected static JMenuItem rotate180MenuItem = new JMenuItem("180°");
+    protected static JMenuItem rotate270MenuItem = new JMenuItem("270°");
+    protected static JMenuItem shiftMenuItem = new JMenuItem("Shift");
+    protected static JMenuItem cropMenuItem = new JMenuItem("Crop");
+    protected static JMenuItem clearMenuItem = new JMenuItem("Clear");
     
-    private static JMenu helpMenu = new JMenu("Help");
-    private static JMenuItem helpGuideMenuItem = new JMenuItem("Help Guide");
-    private static JMenuItem aboutMenuItem = new JMenuItem("About");
+    protected static JMenu helpMenu = new JMenu("Help");
+    protected static JMenuItem helpGuideMenuItem = new JMenuItem("Help Guide");
+    protected static JMenuItem aboutMenuItem = new JMenuItem("About");
     
-    private static JPanel editorPanel = new JPanel();
-    private static JPanel editorCanvasPanel = new JPanel();
+    protected static JPanel editorPanel = new JPanel();
+    protected static JPanel editorCanvasPanel = new JPanel();
     //TODO: make below variables dynamic
-    private static int editorPixelCountX = 10;
-    private static int editorPixelCountY = 10;
-    private static Dimension editorSize = new Dimension(300, 300);
+    protected static int editorPixelCountX = 10;
+    protected static int editorPixelCountY = 10;
+    protected static Dimension editorSize = new Dimension(300, 300);
     protected static int editorPixelWidth = editorSize.width/editorPixelCountX;
     protected static int editorPixelHeight = editorSize.height/editorPixelCountY;
+
+	protected static boolean leftMouseDown = false;
+	protected static boolean rightMouseDown = false;
+	protected static boolean isPaintMode = true;
     
-    private static JPanel upperToolbarPanel = new JPanel();
-    private static JLabel helpTextLabel = new JLabel("Help text");
-    private static JLabel titleLabel = new JLabel("Title");
-    private static JButton saveButton = new JButton("Save");
-    public static JLabel mousePositionLabel = new JLabel("X:Y");
+    protected static JPanel upperToolbarPanel = new JPanel();
+    protected static JLabel helpTextLabel = new JLabel("Help text");
+    protected static JLabel titleLabel = new JLabel("Title");
+    protected static JButton saveButton = new JButton("Save");
+    protected static JLabel mousePositionLabel = new JLabel("X:Y");
     
-    private static JPanel lowerToolbarPanel = new JPanel();
-    private static JButton paintModeButton = new JButton("Paint");
-    private static JButton selectModeButton = new JButton("Select");
-    private static JButton chooseColorButton = new JButton(" ");
-    private static JLabel selectedPaintColorLabel = new JLabel("#000000");
-    public static Color currentBrushColor = new Color(0, 0, 0, 0);
+    protected static JPanel lowerToolbarPanel = new JPanel();
+    protected static JButton paintModeButton = new JButton("Paint");
+    protected static JButton selectModeButton = new JButton("Select");
+    protected static JButton chooseColorButton = new JButton(" ");
+    protected static JLabel selectedPaintColorLabel = new JLabel("#000000");
+    protected static Color currentBrushColor = new Color(0, 0, 0, 0);
     
-    private static Border panelBorder = BorderFactory.createMatteBorder(
+    protected static final Border PANEL_BORDER = BorderFactory.createMatteBorder(
     		BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BACKGROUND_COLOR);
-    private static Border editorPanelBorder = BorderFactory.createMatteBorder(
+    protected static Border EDITOR_PANEL_BORDER = BorderFactory.createMatteBorder(
     		BORDER_SIZE, 0, BORDER_SIZE, 0, BACKGROUND_COLOR);
-    private static Border innerPanelBorder = BorderFactory.createEmptyBorder(
+    protected static Border INNER_PANEL_BORDER = BorderFactory.createEmptyBorder(
     		BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE);
+    protected static final Border PIXEL_BORDER = BorderFactory.createCompoundBorder(
+			BorderFactory.createEmptyBorder(1, 1, 1, 1), 
+			BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
+    protected static final Border SELECTED_PIXEL_BORDER = BorderFactory.createCompoundBorder(
+			BorderFactory.createEmptyBorder(1, 1, 1, 1), 
+			BorderFactory.createMatteBorder(1, 1, 1, 1, ACCENT_COLOR));
+    
+    protected static ArrayList<Pixel> selectedPixels = new ArrayList<Pixel>();
 
     public Window() {
     	initializeWindowContentPanel();
@@ -128,7 +139,7 @@ public class Window extends JFrame {
         
     	windowContentPanel.setBackground(BACKGROUND_COLOR);
         windowContentPanel.setLayout(new BorderLayout());
-    	windowContentPanel.setBorder(panelBorder);
+    	windowContentPanel.setBorder(PANEL_BORDER);
         windowContentPanel.add(editorPanel, BorderLayout.CENTER);
         windowContentPanel.add(upperToolbarPanel, BorderLayout.NORTH);
         windowContentPanel.add(lowerToolbarPanel, BorderLayout.SOUTH);
@@ -178,7 +189,7 @@ public class Window extends JFrame {
 
 	private static void initializeEditorPanel() {
     	editorPanel.setBackground(EDITOR_BACKGROUND_COLOR);
-    	editorPanel.setBorder(editorPanelBorder);
+    	editorPanel.setBorder(EDITOR_PANEL_BORDER);
     	editorPanel.setPreferredSize(EDITOR_DIMENSION);
     	editorCanvasPanel.setPreferredSize(editorSize);
     	editorCanvasPanel.setLayout(new GridLayout(editorPixelCountX, editorPixelCountY));
@@ -192,16 +203,29 @@ public class Window extends JFrame {
     
     private static void initializeUpperToolbarPanel() {
     	upperToolbarPanel.setBackground(TOOLBAR_BACKGROUND_COLOR);
-    	upperToolbarPanel.setBorder(innerPanelBorder);
+    	upperToolbarPanel.setBorder(INNER_PANEL_BORDER);
     	upperToolbarPanel.setPreferredSize(TOOLBAR_DIMENSION);
     	upperToolbarPanel.setLayout(new BoxLayout(upperToolbarPanel, BoxLayout.X_AXIS));
 
     	paintModeButton.setBackground(ACCENT_COLOR);
         paintModeButton.setPreferredSize(BUTTON_DIMENSION);
         paintModeButton.setFocusPainted(false);
+        paintModeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Actions.setPaintState(true);
+			}
+        });
         upperToolbarPanel.add(paintModeButton);
     	selectModeButton.setFocusPainted(false);
     	selectModeButton.setPreferredSize(BUTTON_DIMENSION);
+    	selectModeButton.setBackground(TRANSPARENT_COLOR);
+    	selectModeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Actions.setPaintState(false);
+			}
+    	});
     	upperToolbarPanel.add(selectModeButton);
         
     	upperToolbarPanel.add(Box.createHorizontalGlue());
@@ -221,7 +245,7 @@ public class Window extends JFrame {
     
     private static void initializeLowerToolbarPanel() {
     	lowerToolbarPanel.setBackground(TOOLBAR_BACKGROUND_COLOR);
-    	lowerToolbarPanel.setBorder(innerPanelBorder);
+    	lowerToolbarPanel.setBorder(INNER_PANEL_BORDER);
     	lowerToolbarPanel.setPreferredSize(TOOLBAR_DIMENSION);
     	lowerToolbarPanel.setLayout(new BoxLayout(lowerToolbarPanel, BoxLayout.X_AXIS));
     	
@@ -236,7 +260,7 @@ public class Window extends JFrame {
         lowerToolbarPanel.add(Box.createHorizontalGlue());
         
         helpTextLabel.setFont(LABEL_FONT);
-        helpTextLabel.setForeground(ACCENT_COLOR);
+        helpTextLabel.setForeground(WARNING_COLOR);
         helpTextLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         lowerToolbarPanel.add(helpTextLabel);
         lowerToolbarPanel.add(Box.createRigidArea(new Dimension(BORDER_SIZE, 0)));
@@ -246,7 +270,7 @@ public class Window extends JFrame {
         lowerToolbarPanel.add(mousePositionLabel);
     }
     
-    private static void initializeWindow() {
+    static void initializeWindow() {
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         window.setResizable(true);
         window.setSize(WINDOW_DIMENSION);
@@ -254,87 +278,14 @@ public class Window extends JFrame {
         window.pack();
         window.setVisible(true);
     }
-    
-    public static void setPaintColor(Color c) {
-    	selectedPaintColorLabel.setText(Utils.rgbToHex(c).toUpperCase());
-    	currentBrushColor = c;
-    	chooseColorButton.setBackground(c);
-    }
 
     public static void main(String[] args) {
         windowInstance = new Window();
         
     	SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                initializeWindow();
+            	initializeWindow();
             }
         });
     }
-}
-
-@SuppressWarnings("serial")
-class Pixel extends JPanel {
-	private Pixel pixel = this;
-	private Border pixelBorder = BorderFactory.createCompoundBorder(
-			BorderFactory.createEmptyBorder(1, 1, 1, 1), 
-			BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
-	private boolean blank = true;
-	private Color transparent = Color.LIGHT_GRAY;
-	
-	public Pixel(int xLoc, int yLoc) {
-		super();
-		this.setBorder(pixelBorder);
-		this.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseClicked(MouseEvent e) { }
-
-			@Override
-			public void mouseExited(MouseEvent e) { }
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					blank = false;
-					pixel.setBackground(Window.currentBrushColor);
-					Utils.leftMouseDown = true;
-				}
-				else if (e.getButton() == MouseEvent.BUTTON3) {
-					blank = true;
-					pixel.setBackground(transparent);
-					Utils.rightMouseDown = true;
-				}
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1)
-					Utils.leftMouseDown = false;
-				else if (e.getButton() == MouseEvent.BUTTON3)
-					Utils.rightMouseDown = false;
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) { 
-				Window.mousePositionLabel.setText(xLoc + ":" + yLoc);
-				if (Utils.leftMouseDown) {
-					blank = false;
-					pixel.setBackground(Window.currentBrushColor);
-				}
-				else if (Utils.rightMouseDown) {
-					blank = true;
-					pixel.setBackground(transparent);
-				}
-			}
-		});
-	}
-	
-	@Override
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		if (blank) {
-			this.setBackground(transparent);
-			g.drawLine(0, 0, Window.editorPixelWidth, Window.editorPixelHeight);
-			g.drawLine(0, Window.editorPixelHeight, Window.editorPixelWidth, 0);
-		}
-	}
 }

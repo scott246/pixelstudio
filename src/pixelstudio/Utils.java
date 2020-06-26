@@ -23,6 +23,4 @@ public class Utils {
 		return formatted.length() == 2 ? formatted : "0" + formatted;
 	}
 	
-	public static boolean leftMouseDown = false;
-	public static boolean rightMouseDown = false;
 }
