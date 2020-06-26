@@ -19,12 +19,21 @@ public class Actions {
 		if (isPaintState) {
 			Window.paintModeButton.setBackground(Window.ACCENT_COLOR);
 			Window.selectModeButton.setBackground(Window.TRANSPARENT_COLOR);
+			deselectAllPixels();
+			Window.helpTextLabel.setText("");
 			Window.isPaintMode = true;
 		}
 		else {
-			Window.selectModeButton.setBackground(Window.ACCENT_COLOR);
 			Window.paintModeButton.setBackground(Window.TRANSPARENT_COLOR);
+			Window.selectModeButton.setBackground(Window.ACCENT_COLOR);
+			Window.helpTextLabel.setText("0 pixels selected");
 			Window.isPaintMode = false;
+		}
+	}
+	
+	public static void deselectAllPixels() {
+		for (Pixel p : Window.allPixels) {
+			p.setSelected(false);
 		}
 	}
 }

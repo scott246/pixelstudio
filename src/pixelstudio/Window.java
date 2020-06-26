@@ -103,7 +103,7 @@ public class Window extends JFrame {
     protected static JLabel helpTextLabel = new JLabel("Help text");
     protected static JLabel titleLabel = new JLabel("Title");
     protected static JButton saveButton = new JButton("Save");
-    protected static JLabel mousePositionLabel = new JLabel("X:Y");
+    protected static JLabel mousePositionLabel = new JLabel("0:0");
     
     protected static JPanel lowerToolbarPanel = new JPanel();
     protected static JButton paintModeButton = new JButton("Paint");
@@ -114,9 +114,9 @@ public class Window extends JFrame {
     
     protected static final Border PANEL_BORDER = BorderFactory.createMatteBorder(
     		BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BACKGROUND_COLOR);
-    protected static Border EDITOR_PANEL_BORDER = BorderFactory.createMatteBorder(
+    protected static final Border EDITOR_PANEL_BORDER = BorderFactory.createMatteBorder(
     		BORDER_SIZE, 0, BORDER_SIZE, 0, BACKGROUND_COLOR);
-    protected static Border INNER_PANEL_BORDER = BorderFactory.createEmptyBorder(
+    protected static final Border INNER_PANEL_BORDER = BorderFactory.createEmptyBorder(
     		BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE);
     protected static final Border PIXEL_BORDER = BorderFactory.createCompoundBorder(
 			BorderFactory.createEmptyBorder(1, 1, 1, 1), 
@@ -126,6 +126,7 @@ public class Window extends JFrame {
 			BorderFactory.createMatteBorder(1, 1, 1, 1, ACCENT_COLOR));
     
     protected static ArrayList<Pixel> selectedPixels = new ArrayList<Pixel>();
+    protected static ArrayList<Pixel> allPixels = new ArrayList<Pixel>();
 
     public Window() {
     	initializeWindowContentPanel();
