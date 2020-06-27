@@ -6,9 +6,36 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JColorChooser;
+import javax.swing.colorchooser.AbstractColorChooserPanel;
 
 public class Actions {
-
+	public static void setPaintColor(Color c) {
+    	Window.selectedPaintColorLabel.setText(Utils.rgbToHex(c).toUpperCase());
+    	Window.currentBrushColor = c;
+    	Window.chooseColorButton.setBackground(c);
+    }
+	
+	public static void setPaintState(boolean isPaintState) {
+		if (isPaintState) {
+			Window.paintModeButton.setBackground(Window.ACCENT_COLOR);
+			Window.selectModeButton.setBackground(Window.TRANSPARENT_COLOR);
+			deselectAllPixels();
+			Window.helpTextLabel.setText("");
+			Window.isPaintMode = true;
+		}
+		else {
+			Window.paintModeButton.setBackground(Window.TRANSPARENT_COLOR);
+			Window.selectModeButton.setBackground(Window.ACCENT_COLOR);
+			Window.helpTextLabel.setText("0 pixels selected");
+			Window.isPaintMode = false;
+		}
+	}
+	
+	public static void deselectAllPixels() {
+		for (Pixel p : Window.allPixels) {
+			p.setSelected(false);
+		}
+	}
 }
 
 @SuppressWarnings("serial")
@@ -20,8 +47,15 @@ class ColorChoiceAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Color c = JColorChooser.showDialog((Component) Window.windowInstance, "Select Paint Color", Color.BLACK);
-		if (c != null) Window.setPaintColor(c);
+		JColorChooser colorChooser = new JColorChooser(Color.BLACK);
+		for (AbstractColorChooserPanel a : colorChooser.getChooserPanels()) {
+			if (!a.getDisplayName().equalsIgnoreCase("RGB") && !a.getDisplayName().equalsIgnoreCase("Swatches")) {
+				colorChooser.removeChooserPanel(a);
+			}
+		}
+		JColorChooser.createDialog((Component) Window.windowInstance, "Select Paint Color", true, colorChooser, null, null).setVisible(true);
+		Color c = colorChooser.getColor();
+		if (c != null) Actions.setPaintColor(c);
 	}
 	
 }
