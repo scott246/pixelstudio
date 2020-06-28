@@ -479,19 +479,19 @@ public class View extends JFrame {
 		infoPanel.add(horizontalStrut_3);
 		
 		saveButton.setHorizontalAlignment(SwingConstants.RIGHT);
-		Utils.formatButton(saveButton, "src/pixelstudio/icons/save_26px.png", "Save");
+		ViewActions.formatButton(saveButton, "src/pixelstudio/icons/save_26px.png", "Save");
 		infoPanel.add(saveButton);
 		paintOptionsPanel.setLayout(new BoxLayout(paintOptionsPanel, BoxLayout.X_AXIS));
 		
 		paintSelectModeToggleButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (paintSelectModeToggleButton.isSelected()) Actions.setPaintState(true);
-				else Actions.setPaintState(false);
+				if (paintSelectModeToggleButton.isSelected()) ViewActions.setPaintState(true);
+				else ViewActions.setPaintState(false);
 			}
 		});
 		paintSelectModeToggleButton.setSelected(true);
-		Actions.setPaintState(true);
+		ViewActions.setPaintState(true);
 		paintSelectModeToggleButton.setFocusPainted(false);
 		paintSelectModeToggleButton.setPreferredSize(new Dimension(120, 23));
 		paintOptionsPanel.add(paintSelectModeToggleButton);
@@ -503,49 +503,49 @@ public class View extends JFrame {
 		paintOptionsPanel.add(toolBar);
 		
 		JButton undoButton = new JButton();
-		Utils.formatButton(undoButton, "src/pixelstudio/icons/undo_26px.png", "Undo");
+		ViewActions.formatButton(undoButton, "src/pixelstudio/icons/undo_26px.png", "Undo");
 		toolBar.add(undoButton);
 		
 		JButton redoButton = new JButton();
-		Utils.formatButton(redoButton, "src/pixelstudio/icons/redo_26px.png", "Redo");
+		ViewActions.formatButton(redoButton, "src/pixelstudio/icons/redo_26px.png", "Redo");
 		toolBar.add(redoButton);
 		
 		toolBar.addSeparator();
 		
 		JButton fillButton = new JButton();
-		Utils.formatButton(fillButton, "src/pixelstudio/icons/fill_color_26px.png", "Fill Selection");
+		ViewActions.formatButton(fillButton, "src/pixelstudio/icons/fill_color_26px.png", "Fill Selection");
 		toolBar.add(fillButton);
 		
 		JButton replaceColorButton = new JButton();
-		Utils.formatButton(replaceColorButton, "src/pixelstudio/icons/change_theme_26px.png", "Replace Colors");
+		ViewActions.formatButton(replaceColorButton, "src/pixelstudio/icons/change_theme_26px.png", "Replace Colors");
 		toolBar.add(replaceColorButton);
 		
 		JButton cloneButton = new JButton();
-		Utils.formatButton(cloneButton, "src/pixelstudio/icons/clone_26px.png", "Clone Selection");
+		ViewActions.formatButton(cloneButton, "src/pixelstudio/icons/clone_26px.png", "Clone Selection");
 		toolBar.add(cloneButton);
 		
 		JButton flipHorizontalButton = new JButton();
-		Utils.formatButton(flipHorizontalButton, "src/pixelstudio/icons/flip_horizontal_26px.png", "Flip Horizontal");
+		ViewActions.formatButton(flipHorizontalButton, "src/pixelstudio/icons/flip_horizontal_26px.png", "Flip Horizontal");
 		toolBar.add(flipHorizontalButton);
 		
 		JButton flipVerticalButton = new JButton();
-		Utils.formatButton(flipVerticalButton, "src/pixelstudio/icons/flip_vertical_26px.png", "Flip Vertical");
+		ViewActions.formatButton(flipVerticalButton, "src/pixelstudio/icons/flip_vertical_26px.png", "Flip Vertical");
 		toolBar.add(flipVerticalButton);
 		
 		JButton rotateButton = new JButton();
-		Utils.formatButton(rotateButton, "src/pixelstudio/icons/rotate_right_26px.png", "Rotate 90");
+		ViewActions.formatButton(rotateButton, "src/pixelstudio/icons/rotate_right_26px.png", "Rotate 90");
 		toolBar.add(rotateButton);
 		
 		JButton shiftButton = new JButton();
-		Utils.formatButton(shiftButton, "src/pixelstudio/icons/shift_26px.png", "Shift Selection");
+		ViewActions.formatButton(shiftButton, "src/pixelstudio/icons/shift_26px.png", "Shift Selection");
 		toolBar.add(shiftButton);
 		
 		JButton cropButton = new JButton();
-		Utils.formatButton(cropButton, "src/pixelstudio/icons/crop_26px.png", "Crop Out Selection");
+		ViewActions.formatButton(cropButton, "src/pixelstudio/icons/crop_26px.png", "Crop Out Selection");
 		toolBar.add(cropButton);
 		
 		JButton clearButton = new JButton();
-		Utils.formatButton(clearButton, "src/pixelstudio/icons/clear_symbol_26px.png", "Clear Selection");
+		ViewActions.formatButton(clearButton, "src/pixelstudio/icons/clear_symbol_26px.png", "Clear Selection");
 		toolBar.add(clearButton);
 		
 		Component horizontalGlue = Box.createHorizontalGlue();
@@ -558,7 +558,7 @@ public class View extends JFrame {
 		horizontalStrut.setPreferredSize(new Dimension(5, 0));
 		paintOptionsPanel.add(horizontalStrut);
 
-		Utils.formatButton(paintColorButton, "src/pixelstudio/icons/paint_palette_26px.png", "Change Brush Color");
+		ViewActions.formatButton(paintColorButton, "src/pixelstudio/icons/paint_palette_26px.png", "Change Brush Color");
 		paintColorButton.setPreferredSize(new Dimension(90, 23));
 		paintColorButton.setHorizontalAlignment(SwingConstants.RIGHT);
         paintColorButton.addActionListener(new ColorChoiceAction());
