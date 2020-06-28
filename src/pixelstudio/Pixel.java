@@ -1,16 +1,13 @@
 package pixelstudio;
 
-import java.awt.AWTEvent;
+import static pixelstudio.View.viewInstance;
+
 import java.awt.Color;
-import java.awt.Event;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
-
-import static pixelstudio.View.viewInstance;
 
 @SuppressWarnings("serial")
 public class Pixel extends JPanel {
@@ -27,7 +24,7 @@ public class Pixel extends JPanel {
 		 */
 		pixel.setBorder(viewInstance.PIXEL_BORDER);
 		pixel.addMouseListener(new MouseListener() {
-			int ctrlClickMask = KeyEvent.CTRL_DOWN_MASK | KeyEvent.BUTTON1_DOWN_MASK;
+			//int ctrlClickMask = KeyEvent.CTRL_DOWN_MASK | KeyEvent.BUTTON1_DOWN_MASK;
 			@Override
 			public void mouseClicked(MouseEvent e) { }
 
@@ -36,18 +33,19 @@ public class Pixel extends JPanel {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if (e.getModifiersEx() == ctrlClickMask) {
-					if (viewInstance.isPaintMode) 
-						paintPixel(false);
-					else 
-						selectPixel(false);
-				}
-				else if (e.getButton() == MouseEvent.BUTTON1) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
 					if (viewInstance.isPaintMode) 
 						paintPixel(true);
 					else 
 						selectPixel(true);
 					viewInstance.leftMouseDown = true;
+				}
+				else if (e.getButton() == MouseEvent.BUTTON3) {
+					if (viewInstance.isPaintMode) 
+						paintPixel(false);
+					else 
+						selectPixel(false);
+					viewInstance.rightMouseDown = true;
 				}
 			}
 
@@ -55,24 +53,25 @@ public class Pixel extends JPanel {
 			public void mouseReleased(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1)
 					viewInstance.leftMouseDown = false;
+				if (e.getButton() == MouseEvent.BUTTON3)
+					viewInstance.rightMouseDown = false;
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) { 
 				viewInstance.mouseLocationLabel.setText(xLoc + ":" + yLoc);
-				if (e.getModifiersEx() == ctrlClickMask) {
-					if (viewInstance.isPaintMode) 
-						paintPixel(false);
-					else 
-						selectPixel(false);
-				}
-				else if (viewInstance.leftMouseDown) {
+				if (viewInstance.leftMouseDown) {
 					if (viewInstance.isPaintMode) 
 						paintPixel(true);
 					else 
 						selectPixel(true);
 				}
-				
+				else if (viewInstance.rightMouseDown) {
+					if (viewInstance.isPaintMode) 
+						paintPixel(false);
+					else 
+						selectPixel(false);
+				}
 			}
 		});
 		viewInstance.allPixels.add(pixel);
@@ -82,15 +81,18 @@ public class Pixel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (!filled) {
-			pixel.setBackground(viewInstance.TRANSPARENT_COLOR);
+			pixel.setBackground(View.TRANSPARENT_COLOR_1);
+			Color previousColor = g.getColor();
+			g.setColor(View.TRANSPARENT_COLOR_2);
 			g.drawLine(0, 0, viewInstance.editorPixelWidth, viewInstance.editorPixelHeight);
 			g.drawLine(0, viewInstance.editorPixelHeight, viewInstance.editorPixelWidth, 0);
+			g.setColor(previousColor);
 		}
 		if (selected) {
 			Color previousColor = g.getColor();
-			g.setColor(viewInstance.ACCENT_COLOR);
+			g.setColor(View.FOREGROUND_COLOR);
 			g.drawRect(0, 0, viewInstance.editorPixelWidth, viewInstance.editorPixelHeight);
-			g.setColor(viewInstance.SELECTION_COLOR);
+			g.setColor(View.SELECTION_COLOR);
 			g.fillRect(0, 0, viewInstance.editorPixelWidth, viewInstance.editorPixelHeight);
 			g.setColor(previousColor);
 		}
@@ -99,7 +101,8 @@ public class Pixel extends JPanel {
 	private void paintPixel(boolean filled) {
 		pixel.filled = filled;
 		if (filled) pixel.setBackground(viewInstance.currentBrushColor);
-		if (!filled) pixel.setBackground(viewInstance.TRANSPARENT_COLOR);
+		if (!filled) pixel.setBackground(View.TRANSPARENT_COLOR_1);
+		pixel.repaint();
 	}
 	
 	private void selectPixel(boolean selected) {

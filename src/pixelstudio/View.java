@@ -29,13 +29,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JPopupMenu;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 @SuppressWarnings("serial")
 public class View extends JFrame {
@@ -44,14 +42,15 @@ public class View extends JFrame {
 	protected final int WINDOW_WIDTH = 600;
     protected final int WINDOW_HEIGHT = 700;
     
-    protected final Color BACKGROUND_COLOR = new Color(32, 32, 32);
-    protected final Color EDITOR_BACKGROUND_COLOR = new Color(64, 64, 64);
-    protected final Color TOOLBAR_BACKGROUND_COLOR = new Color(64, 64, 64);
-    protected final Color FOREGROUND_COLOR = new Color(255, 255, 255);
-    protected final Color ACCENT_COLOR = new Color(255, 128, 0, 255);
-    protected final Color SELECTION_COLOR = new Color(255, 128, 0, 64);
-    protected final Color TRANSPARENT_COLOR = Color.LIGHT_GRAY;
-    protected final Color WARNING_COLOR = new Color(255, 255, 0);
+    protected static final Color BACKGROUND_COLOR = new Color(32, 32, 32);
+    protected static final Color EDITOR_BACKGROUND_COLOR = new Color(64, 64, 64);
+    protected static final Color TOOLBAR_BACKGROUND_COLOR = new Color(64, 64, 64);
+    protected static final Color FOREGROUND_COLOR = new Color(255, 255, 255);
+    protected static final Color ACCENT_COLOR = new Color(255, 128, 0);
+    protected static final Color SELECTION_COLOR = new Color(255, 255, 255, 64);
+    protected static final Color TRANSPARENT_COLOR_1 = new Color(64, 64, 64);
+    protected static final Color TRANSPARENT_COLOR_2 = new Color(128, 128, 128);
+    protected static final Color WARNING_COLOR = new Color(255, 255, 0);
     
     //TODO: make below variables dynamic
     protected int editorPixelCountX = 10;
@@ -59,8 +58,9 @@ public class View extends JFrame {
     protected Dimension editorSize = new Dimension(600, 600);
     protected int editorPixelWidth = editorSize.width/editorPixelCountX;
     protected int editorPixelHeight = editorSize.height/editorPixelCountY;
-
+    
 	protected boolean leftMouseDown = false;
+	protected boolean rightMouseDown = false;
 	protected boolean isPaintMode = true;
     protected Color currentBrushColor = new Color(0, 0, 0);
 
@@ -87,8 +87,8 @@ public class View extends JFrame {
 	protected JLabel helpTextLabel = new JLabel("Help Text");
 	protected JLabel mouseLocationLabel = new JLabel("X:Y");
 	protected JPanel editorCanvasPanel = new JPanel();
-	protected JButton paintColorButton = new JButton(" ");
-	protected JButton saveButton = new JButton("Save");
+	protected JButton paintColorButton = new JButton();
+	protected JButton saveButton = new JButton();
 	protected JToggleButton paintSelectModeToggleButton = new JToggleButton();
 	
 	protected JMenuItem fillMenuItem = new JMenuItem("Fill");
@@ -177,7 +177,7 @@ public class View extends JFrame {
 		JSeparator separator_1 = new JSeparator();
 		fileMenu.add(separator_1);
 		
-		JMenuItem exitMenuItem = new JMenuItem("Exit");
+		JMenuItem exitMenuItem = new JMenuItem(new ExitAction());
 		fileMenu.add(exitMenuItem);
 		
 		JMenu editMenu = new JMenu("Edit");
@@ -424,23 +424,10 @@ public class View extends JFrame {
 		
 		editorCanvasPanel.setBackground(TOOLBAR_BACKGROUND_COLOR);
 		editorCanvasPanel.setPreferredSize(editorSize);
-    	
-    	JPopupMenu popupMenu = new JPopupMenu();
-    	addPopup(editorCanvasPanel, popupMenu);
-    	popupMenu.add(fillMenuItem);
-    	popupMenu.add(replaceColorMenuItem);
-    	popupMenu.add(cloneMenuItem);
-    	popupMenu.add(flipMenu);
-    	popupMenu.add(rotateMenu);
-    	popupMenu.add(shiftMenuItem);
-    	popupMenu.add(cropOutMenuItem);
-    	popupMenu.add(clearMenuItem);
     	editorCanvasPanel.setLayout(new GridLayout(editorPixelCountX, editorPixelCountY));
     	for (int i = 0; i < editorPixelCountX; i++) {
     		for (int j = 0; j < editorPixelCountY; j++) {
-    			Pixel pixel = new Pixel(i, j);
-    			addPopup(pixel, popupMenu);
-    			editorCanvasPanel.add(pixel);
+    			editorCanvasPanel.add(new Pixel(i, j));
     		}
     	}
     	
@@ -481,12 +468,18 @@ public class View extends JFrame {
 		
 		projectTitleTextField = new JTextField();
 		projectTitleTextField.setHorizontalAlignment(SwingConstants.RIGHT);
+		projectTitleTextField.setBorder(null);
 		projectTitleTextField.setMaximumSize(new Dimension(200, 2147483647));
 		projectTitleTextField.setPreferredSize(new Dimension(200, 20));
 		infoPanel.add(projectTitleTextField);
 		projectTitleTextField.setColumns(10);
 		
+		Component horizontalStrut_3 = Box.createHorizontalStrut(20);
+		horizontalStrut_3.setPreferredSize(new Dimension(5, 0));
+		infoPanel.add(horizontalStrut_3);
+		
 		saveButton.setHorizontalAlignment(SwingConstants.RIGHT);
+		Utils.formatButton(saveButton, "src/pixelstudio/icons/save_26px.png", "Save");
 		infoPanel.add(saveButton);
 		paintOptionsPanel.setLayout(new BoxLayout(paintOptionsPanel, BoxLayout.X_AXIS));
 		
@@ -499,8 +492,61 @@ public class View extends JFrame {
 		});
 		paintSelectModeToggleButton.setSelected(true);
 		Actions.setPaintState(true);
+		paintSelectModeToggleButton.setFocusPainted(false);
 		paintSelectModeToggleButton.setPreferredSize(new Dimension(120, 23));
 		paintOptionsPanel.add(paintSelectModeToggleButton);
+		
+		JToolBar toolBar = new JToolBar();
+		toolBar.setBackground(TOOLBAR_BACKGROUND_COLOR);
+		toolBar.setFloatable(false);
+		toolBar.setBorder(null);
+		paintOptionsPanel.add(toolBar);
+		
+		JButton undoButton = new JButton();
+		Utils.formatButton(undoButton, "src/pixelstudio/icons/undo_26px.png", "Undo");
+		toolBar.add(undoButton);
+		
+		JButton redoButton = new JButton();
+		Utils.formatButton(redoButton, "src/pixelstudio/icons/redo_26px.png", "Redo");
+		toolBar.add(redoButton);
+		
+		toolBar.addSeparator();
+		
+		JButton fillButton = new JButton();
+		Utils.formatButton(fillButton, "src/pixelstudio/icons/fill_color_26px.png", "Fill Selection");
+		toolBar.add(fillButton);
+		
+		JButton replaceColorButton = new JButton();
+		Utils.formatButton(replaceColorButton, "src/pixelstudio/icons/change_theme_26px.png", "Replace Colors");
+		toolBar.add(replaceColorButton);
+		
+		JButton cloneButton = new JButton();
+		Utils.formatButton(cloneButton, "src/pixelstudio/icons/clone_26px.png", "Clone Selection");
+		toolBar.add(cloneButton);
+		
+		JButton flipHorizontalButton = new JButton();
+		Utils.formatButton(flipHorizontalButton, "src/pixelstudio/icons/flip_horizontal_26px.png", "Flip Horizontal");
+		toolBar.add(flipHorizontalButton);
+		
+		JButton flipVerticalButton = new JButton();
+		Utils.formatButton(flipVerticalButton, "src/pixelstudio/icons/flip_vertical_26px.png", "Flip Vertical");
+		toolBar.add(flipVerticalButton);
+		
+		JButton rotateButton = new JButton();
+		Utils.formatButton(rotateButton, "src/pixelstudio/icons/rotate_right_26px.png", "Rotate 90");
+		toolBar.add(rotateButton);
+		
+		JButton shiftButton = new JButton();
+		Utils.formatButton(shiftButton, "src/pixelstudio/icons/shift_26px.png", "Shift Selection");
+		toolBar.add(shiftButton);
+		
+		JButton cropButton = new JButton();
+		Utils.formatButton(cropButton, "src/pixelstudio/icons/crop_26px.png", "Crop Out Selection");
+		toolBar.add(cropButton);
+		
+		JButton clearButton = new JButton();
+		Utils.formatButton(clearButton, "src/pixelstudio/icons/clear_symbol_26px.png", "Clear Selection");
+		toolBar.add(clearButton);
 		
 		Component horizontalGlue = Box.createHorizontalGlue();
 		paintOptionsPanel.add(horizontalGlue);
@@ -511,30 +557,13 @@ public class View extends JFrame {
 		Component horizontalStrut = Box.createHorizontalStrut(20);
 		horizontalStrut.setPreferredSize(new Dimension(5, 0));
 		paintOptionsPanel.add(horizontalStrut);
-		
+
+		Utils.formatButton(paintColorButton, "src/pixelstudio/icons/paint_palette_26px.png", "Change Brush Color");
 		paintColorButton.setPreferredSize(new Dimension(90, 23));
 		paintColorButton.setHorizontalAlignment(SwingConstants.RIGHT);
-		paintColorButton.setFocusPainted(false);
         paintColorButton.addActionListener(new ColorChoiceAction());
 		paintColorButton.setBackground(currentBrushColor);
 		paintOptionsPanel.add(paintColorButton);
 		editorPanel.setLayout(gl_editorPanel);
-	}
-	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
 	}
 }
