@@ -75,11 +75,9 @@ public class View extends JFrame {
 	private JPanel contentPane;
 	private JPanel launcherPanel = new JPanel();
 	private JPanel editorPanel = new JPanel();
-	private JTextField densityHeightInput;
 	private JTextField nameInput;
-	private JTextField densityWidthInput;
-	private JTextField canvasHeightInput;
-	private JTextField canvasWidthInput;
+	private JTextField pixelInput;
+	private JTextField canvasSizeInput;
 	private JTextField openLocationInput;
 	private JTextField projectTitleTextField;
 	
@@ -294,43 +292,29 @@ public class View extends JFrame {
 		newNameLabel.setForeground(FOREGROUND_COLOR);
 		newNameLabel.setToolTipText("Name of project");
 		
-		JLabel canvasWidthLabel = new JLabel("Canvas (Width)");
-		canvasWidthLabel.setForeground(FOREGROUND_COLOR);
-		canvasWidthLabel.setToolTipText("Width of the canvas (in pixels)");
+		JLabel canvasSizeLabel = new JLabel("Canvas Size");
+		canvasSizeLabel.setForeground(FOREGROUND_COLOR);
+		canvasSizeLabel.setToolTipText("Width of the canvas (in pixels)");
 		
-		JLabel canvasHeightLabel = new JLabel("Canvas (Height)");
-		canvasHeightLabel.setForeground(FOREGROUND_COLOR);
-		canvasHeightLabel.setToolTipText("Height of the canvas (in pixels)");
+		JLabel pixelLabel = new JLabel("Pixel Density");
+		pixelLabel.setForeground(FOREGROUND_COLOR);
+		pixelLabel.setToolTipText("Number of pixels contained horizontally in the picture");
 		
-		JLabel densityWidthLabel = new JLabel("Density (Width)");
-		densityWidthLabel.setForeground(FOREGROUND_COLOR);
-		densityWidthLabel.setToolTipText("Number of pixels contained horizontally in the picture");
-		
-		JLabel densityHeightLabel = new JLabel("Density (Height)");
-		densityHeightLabel.setForeground(FOREGROUND_COLOR);
-		densityHeightLabel.setToolTipText("Number of pixels contained vertically in the picture");
-		
-		JCheckBox forceSquareCheckBox = new JCheckBox("Square");
-		forceSquareCheckBox.setForeground(FOREGROUND_COLOR);
-		forceSquareCheckBox.setBackground(newSelectionContentPanel.getBackground());
-		forceSquareCheckBox.setToolTipText("Forces the width and height of the canvas and pixel density to be equal");
+		JCheckBox pixelSizeCheckBox = new JCheckBox("Pixel Size");
+		pixelSizeCheckBox.setForeground(FOREGROUND_COLOR);
+		pixelSizeCheckBox.setBackground(newSelectionContentPanel.getBackground());
+		pixelSizeCheckBox.setToolTipText("Forces the width and height of the canvas and pixel density to be equal");
 		
 		JButton createNewProjectButton = new JButton("Create");
-		
-		densityHeightInput = new JTextField();
-		densityHeightInput.setColumns(10);
 		
 		nameInput = new JTextField();
 		nameInput.setColumns(10);
 		
-		densityWidthInput = new JTextField();
-		densityWidthInput.setColumns(10);
+		pixelInput = new JTextField();
+		pixelInput.setColumns(10);
 		
-		canvasHeightInput = new JTextField();
-		canvasHeightInput.setColumns(10);
-		
-		canvasWidthInput = new JTextField();
-		canvasWidthInput.setColumns(10);
+		canvasSizeInput = new JTextField();
+		canvasSizeInput.setColumns(10);
 		GroupLayout gl_newSelectionContentPanel = new GroupLayout(newSelectionContentPanel);
 		gl_newSelectionContentPanel.setHorizontalGroup(
 			gl_newSelectionContentPanel.createParallelGroup(Alignment.LEADING)
@@ -338,26 +322,20 @@ public class View extends JFrame {
 					.addContainerGap()
 					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_newSelectionContentPanel.createSequentialGroup()
-							.addComponent(canvasHeightLabel)
-							.addGap(18)
-							.addComponent(canvasHeightInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_newSelectionContentPanel.createSequentialGroup()
-							.addComponent(forceSquareCheckBox)
-							.addPreferredGap(ComponentPlacement.RELATED, 260, Short.MAX_VALUE)
+							.addComponent(pixelSizeCheckBox)
+							.addPreferredGap(ComponentPlacement.RELATED, 410, Short.MAX_VALUE)
 							.addComponent(createNewProjectButton))
 						.addGroup(gl_newSelectionContentPanel.createSequentialGroup()
 							.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(densityHeightLabel)
 								.addComponent(newNameLabel)
-								.addComponent(densityWidthLabel)
-								.addComponent(canvasWidthLabel))
-							.addGap(18)
+								.addComponent(canvasSizeLabel)
+								.addComponent(pixelLabel))
+							.addGap(21)
 							.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(canvasWidthInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(densityWidthInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(canvasSizeInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(nameInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(densityHeightInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGap(92)))
+								.addComponent(pixelInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addGap(352)))
 					.addContainerGap())
 		);
 		gl_newSelectionContentPanel.setVerticalGroup(
@@ -369,23 +347,15 @@ public class View extends JFrame {
 						.addComponent(nameInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(canvasWidthLabel)
-						.addComponent(canvasWidthInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(canvasSizeLabel)
+						.addComponent(canvasSizeInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(canvasHeightLabel)
-						.addComponent(canvasHeightInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(pixelLabel)
+						.addComponent(pixelInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED, 355, Short.MAX_VALUE)
 					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(densityWidthLabel)
-						.addComponent(densityWidthInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(densityHeightLabel)
-						.addComponent(densityHeightInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
-					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(forceSquareCheckBox)
+						.addComponent(pixelSizeCheckBox)
 						.addComponent(createNewProjectButton))
 					.addContainerGap())
 		);
