@@ -1,41 +1,38 @@
 package pixelstudio;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import java.awt.CardLayout;
-import javax.swing.JRadioButton;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.JTextField;
-import javax.swing.JLabel;
-import javax.swing.JCheckBox;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.SwingConstants;
-import java.awt.Component;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.JToggleButton;
-import java.awt.Color;
-import java.awt.Dimension;
-import javax.swing.JMenuBar;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
 public class View extends JFrame {
@@ -91,9 +88,8 @@ public class View extends JFrame {
 	protected JLabel mouseLocationLabel = new JLabel("X:Y");
 	protected JPanel editorCanvasPanel = new JPanel();
 	protected JButton paintColorButton = new JButton(" ");
-	protected JButton selectModeButton = new JButton("Select");
-	protected JButton paintModeButton = new JButton("Paint");
 	protected JButton saveButton = new JButton("Save");
+	protected JToggleButton paintSelectModeToggleButton = new JToggleButton();
 
 	/**
 	 * Launch the application.
@@ -408,7 +404,7 @@ public class View extends JFrame {
 		
 		JButton openButton = new JButton("Open");
 		
-		JList recentlyOpenedList = new JList();
+		JList<String> recentlyOpenedList = new JList<>();
 		
 		JLabel recentLabel = new JLabel("Recent");
 		GroupLayout gl_openSelectionContentPanel = new GroupLayout(openSelectionContentPanel);
@@ -512,23 +508,17 @@ public class View extends JFrame {
 		infoPanel.add(saveButton);
 		paintOptionsPanel.setLayout(new BoxLayout(paintOptionsPanel, BoxLayout.X_AXIS));
 		
-		selectModeButton.setPreferredSize(new Dimension(80, 23));
-		selectModeButton.addActionListener(new ActionListener() {
+		paintSelectModeToggleButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Actions.setPaintState(false);
+				if (paintSelectModeToggleButton.isSelected()) Actions.setPaintState(true);
+				else Actions.setPaintState(false);
 			}
-    	});
-		paintOptionsPanel.add(selectModeButton);
-		
-		paintModeButton.setPreferredSize(new Dimension(80, 23));
-		paintModeButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Actions.setPaintState(true);
-			}
-        });
-		paintOptionsPanel.add(paintModeButton);
+		});
+		paintSelectModeToggleButton.setSelected(true);
+		Actions.setPaintState(true);
+		paintSelectModeToggleButton.setPreferredSize(new Dimension(120, 23));
+		paintOptionsPanel.add(paintSelectModeToggleButton);
 		
 		Component horizontalGlue = Box.createHorizontalGlue();
 		paintOptionsPanel.add(horizontalGlue);

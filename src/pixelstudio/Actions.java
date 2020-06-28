@@ -19,15 +19,13 @@ public class Actions {
 	
 	public static void setPaintState(boolean isPaintState) {
 		if (isPaintState) {
-			viewInstance.paintModeButton.setBackground(viewInstance.ACCENT_COLOR);
-			viewInstance.selectModeButton.setBackground(viewInstance.TRANSPARENT_COLOR);
+			viewInstance.paintSelectModeToggleButton.setText("Paint Mode");
 			deselectAllPixels();
 			viewInstance.helpTextLabel.setText("");
 			viewInstance.isPaintMode = true;
 		}
 		else {
-			viewInstance.paintModeButton.setBackground(viewInstance.TRANSPARENT_COLOR);
-			viewInstance.selectModeButton.setBackground(viewInstance.ACCENT_COLOR);
+			viewInstance.paintSelectModeToggleButton.setText("Select Mode");
 			viewInstance.helpTextLabel.setText("0 pixels selected");
 			viewInstance.isPaintMode = false;
 		}
