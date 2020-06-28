@@ -8,31 +8,33 @@ import javax.swing.AbstractAction;
 import javax.swing.JColorChooser;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 
+import static pixelstudio.View.viewInstance;
+
 public class Actions {
 	public static void setPaintColor(Color c) {
-    	Window.selectedPaintColorLabel.setText(Utils.rgbToHex(c).toUpperCase());
-    	Window.currentBrushColor = c;
-    	Window.chooseColorButton.setBackground(c);
+    	viewInstance.paintColorLabel.setText(Utils.rgbToHex(c).toUpperCase());
+    	viewInstance.currentBrushColor = c;
+    	viewInstance.paintColorButton.setBackground(c);
     }
 	
 	public static void setPaintState(boolean isPaintState) {
 		if (isPaintState) {
-			Window.paintModeButton.setBackground(Window.ACCENT_COLOR);
-			Window.selectModeButton.setBackground(Window.TRANSPARENT_COLOR);
+			viewInstance.paintModeButton.setBackground(viewInstance.ACCENT_COLOR);
+			viewInstance.selectModeButton.setBackground(viewInstance.TRANSPARENT_COLOR);
 			deselectAllPixels();
-			Window.helpTextLabel.setText("");
-			Window.isPaintMode = true;
+			viewInstance.helpTextLabel.setText("");
+			viewInstance.isPaintMode = true;
 		}
 		else {
-			Window.paintModeButton.setBackground(Window.TRANSPARENT_COLOR);
-			Window.selectModeButton.setBackground(Window.ACCENT_COLOR);
-			Window.helpTextLabel.setText("0 pixels selected");
-			Window.isPaintMode = false;
+			viewInstance.paintModeButton.setBackground(viewInstance.TRANSPARENT_COLOR);
+			viewInstance.selectModeButton.setBackground(viewInstance.ACCENT_COLOR);
+			viewInstance.helpTextLabel.setText("0 pixels selected");
+			viewInstance.isPaintMode = false;
 		}
 	}
 	
 	public static void deselectAllPixels() {
-		for (Pixel p : Window.allPixels) {
+		for (Pixel p : viewInstance.allPixels) {
 			p.setSelected(false);
 		}
 	}
@@ -53,7 +55,7 @@ class ColorChoiceAction extends AbstractAction {
 				colorChooser.removeChooserPanel(a);
 			}
 		}
-		JColorChooser.createDialog((Component) Window.windowInstance, "Select Paint Color", true, colorChooser, null, null).setVisible(true);
+		JColorChooser.createDialog((Component) viewInstance, "Select Paint Color", true, colorChooser, null, null).setVisible(true);
 		Color c = colorChooser.getColor();
 		if (c != null) Actions.setPaintColor(c);
 	}

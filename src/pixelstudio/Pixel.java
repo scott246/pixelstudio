@@ -7,6 +7,8 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
+import static pixelstudio.View.viewInstance;
+
 @SuppressWarnings("serial")
 public class Pixel extends JPanel {
 	private Pixel pixel = this;
@@ -19,7 +21,7 @@ public class Pixel extends JPanel {
 		super();
 		x = xLoc;
 		y = yLoc;
-		pixel.setBorder(Window.PIXEL_BORDER);
+		pixel.setBorder(viewInstance.PIXEL_BORDER);
 		pixel.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) { }
@@ -30,85 +32,85 @@ public class Pixel extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1) {
-					if (Window.isPaintMode) 
+					if (viewInstance.isPaintMode) 
 						paintPixel(true);
 					else 
 						selectPixel(true);
-					Window.leftMouseDown = true;
+					viewInstance.leftMouseDown = true;
 				}
 				else if (e.getButton() == MouseEvent.BUTTON3) {
-					if (Window.isPaintMode) 
+					if (viewInstance.isPaintMode) 
 						paintPixel(false);
 					else 
 						selectPixel(false);
-					Window.rightMouseDown = true;
+					viewInstance.rightMouseDown = true;
 				}
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1)
-					Window.leftMouseDown = false;
+					viewInstance.leftMouseDown = false;
 				else if (e.getButton() == MouseEvent.BUTTON3)
-					Window.rightMouseDown = false;
+					viewInstance.rightMouseDown = false;
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) { 
-				Window.mousePositionLabel.setText(xLoc + ":" + yLoc);
-				if (Window.leftMouseDown) {
-					if (Window.isPaintMode) 
+				viewInstance.mouseLocationLabel.setText(xLoc + ":" + yLoc);
+				if (viewInstance.leftMouseDown) {
+					if (viewInstance.isPaintMode) 
 						paintPixel(true);
 					else 
 						selectPixel(true);
 				}
-				else if (Window.rightMouseDown) {
-					if (Window.isPaintMode) 
+				else if (viewInstance.rightMouseDown) {
+					if (viewInstance.isPaintMode) 
 						paintPixel(false);
 					else 
 						selectPixel(false);
 				}
 			}
 		});
-		Window.allPixels.add(pixel);
+		viewInstance.allPixels.add(pixel);
 	}
 	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (!filled) {
-			pixel.setBackground(Window.TRANSPARENT_COLOR);
-			g.drawLine(0, 0, Window.editorPixelWidth, Window.editorPixelHeight);
-			g.drawLine(0, Window.editorPixelHeight, Window.editorPixelWidth, 0);
+			pixel.setBackground(viewInstance.TRANSPARENT_COLOR);
+			g.drawLine(0, 0, viewInstance.editorPixelWidth, viewInstance.editorPixelHeight);
+			g.drawLine(0, viewInstance.editorPixelHeight, viewInstance.editorPixelWidth, 0);
 		}
 		if (selected) {
 			Color previousColor = g.getColor();
-			g.setColor(Window.ACCENT_COLOR);
-			g.drawRect(0, 0, Window.editorPixelWidth-1, Window.editorPixelHeight-1);
-			g.setColor(Window.SELECTION_COLOR);
-			g.fillRect(0, 0, Window.editorPixelWidth, Window.editorPixelHeight);
+			g.setColor(viewInstance.ACCENT_COLOR);
+			g.drawRect(0, 0, viewInstance.editorPixelWidth-1, viewInstance.editorPixelHeight-1);
+			g.setColor(viewInstance.SELECTION_COLOR);
+			g.fillRect(0, 0, viewInstance.editorPixelWidth, viewInstance.editorPixelHeight);
 			g.setColor(previousColor);
 		}
 	}
 
 	private void paintPixel(boolean filled) {
 		pixel.filled = filled;
-		if (filled) pixel.setBackground(Window.currentBrushColor);
-		if (!filled) pixel.setBackground(Window.TRANSPARENT_COLOR);
+		if (filled) pixel.setBackground(viewInstance.currentBrushColor);
+		if (!filled) pixel.setBackground(viewInstance.TRANSPARENT_COLOR);
 	}
 	
 	private void selectPixel(boolean selected) {
 		pixel.selected = selected;
-		if (selected && !Window.selectedPixels.contains(pixel)) Window.selectedPixels.add(pixel);
-		else if (!selected && Window.selectedPixels.contains(pixel)) Window.selectedPixels.remove(pixel);
+		if (selected && !viewInstance.selectedPixels.contains(pixel)) viewInstance.selectedPixels.add(pixel);
+		else if (!selected && viewInstance.selectedPixels.contains(pixel)) viewInstance.selectedPixels.remove(pixel);
 		printPixelSelection();
-		Window.helpTextLabel.setText(Window.selectedPixels.size() + " pixels selected");
+		viewInstance.helpTextLabel.setText(viewInstance.selectedPixels.size() + " pixels selected");
 		pixel.repaint();
 	}
 	
 	private void printPixelSelection() {
 		System.out.println("--SELECTED PIXELS--");
-		for (Pixel p : Window.selectedPixels) {
+		for (Pixel p : viewInstance.selectedPixels) {
 			System.out.println(p.x + "," + p.y);
 		}
 		System.out.println();
