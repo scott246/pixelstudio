@@ -21,12 +21,12 @@ public class Actions {
 		if (isPaintState) {
 			viewInstance.paintSelectModeToggleButton.setText("Paint Mode");
 			deselectAllPixels();
-			viewInstance.helpTextLabel.setText("");
+			viewInstance.helpTextLabel.setText("Switched to paint mode");
 			viewInstance.isPaintMode = true;
 		}
 		else {
 			viewInstance.paintSelectModeToggleButton.setText("Select Mode");
-			viewInstance.helpTextLabel.setText("0 pixels selected");
+			viewInstance.helpTextLabel.setText("Switched to select mode");
 			viewInstance.isPaintMode = false;
 		}
 	}

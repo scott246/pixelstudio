@@ -33,13 +33,16 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JPopupMenu;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 @SuppressWarnings("serial")
 public class View extends JFrame {
 	public static View viewInstance;
 	
 	protected final int WINDOW_WIDTH = 600;
-    protected final int WINDOW_HEIGHT = 600;
+    protected final int WINDOW_HEIGHT = 700;
     
     protected final Color BACKGROUND_COLOR = new Color(32, 32, 32);
     protected final Color EDITOR_BACKGROUND_COLOR = new Color(64, 64, 64);
@@ -53,12 +56,11 @@ public class View extends JFrame {
     //TODO: make below variables dynamic
     protected int editorPixelCountX = 10;
     protected int editorPixelCountY = 10;
-    protected Dimension editorSize = new Dimension(600, 500);
+    protected Dimension editorSize = new Dimension(600, 600);
     protected int editorPixelWidth = editorSize.width/editorPixelCountX;
     protected int editorPixelHeight = editorSize.height/editorPixelCountY;
 
 	protected boolean leftMouseDown = false;
-	protected boolean rightMouseDown = false;
 	protected boolean isPaintMode = true;
     protected Color currentBrushColor = new Color(0, 0, 0);
 
@@ -88,6 +90,20 @@ public class View extends JFrame {
 	protected JButton paintColorButton = new JButton(" ");
 	protected JButton saveButton = new JButton("Save");
 	protected JToggleButton paintSelectModeToggleButton = new JToggleButton();
+	
+	protected JMenuItem fillMenuItem = new JMenuItem("Fill");
+	protected JMenuItem replaceColorMenuItem = new JMenuItem("Replace Color");
+	protected JMenuItem cloneMenuItem = new JMenuItem("Clone");
+	protected JMenu flipMenu = new JMenu("Flip");
+	protected JMenuItem flipHorizontallyMenuItem = new JMenuItem("Flip Horizontally");
+	protected JMenuItem flipVerticallyMenuItem = new JMenuItem("Flip Vertically");
+	protected JMenu rotateMenu = new JMenu("Rotate");
+	protected JMenuItem rotate90MenuItem = new JMenuItem("90");
+	protected JMenuItem rotate180MenuItem = new JMenuItem("180");
+	protected JMenuItem rotate270MenuItem = new JMenuItem("270");
+	protected JMenuItem shiftMenuItem = new JMenuItem("Shift");
+	protected JMenuItem cropOutMenuItem = new JMenuItem("Crop Out");
+	protected JMenuItem clearMenuItem = new JMenuItem("Clear");
 
 	/**
 	 * Launch the application.
@@ -176,49 +192,30 @@ public class View extends JFrame {
 		JMenu actionsMenu = new JMenu("Actions");
 		editMenu.add(actionsMenu);
 		
-		JMenuItem fillMenuItem = new JMenuItem("Fill");
 		actionsMenu.add(fillMenuItem);
-		
-		JMenuItem replaceColorMenuItem = new JMenuItem("Replace Color");
+
 		actionsMenu.add(replaceColorMenuItem);
-		
-		JMenuItem cloneMenuItem = new JMenuItem("Clone");
+
 		actionsMenu.add(cloneMenuItem);
-		
-		JMenu flipMenu = new JMenu("Flip");
+
 		actionsMenu.add(flipMenu);
-		
-		JMenuItem flipHorizontallyMenuItem = new JMenuItem("Flip Horizontally");
+
 		flipMenu.add(flipHorizontallyMenuItem);
-		
-		JMenuItem flipVerticallyMenuItem = new JMenuItem("Flip Vertically");
+
 		flipMenu.add(flipVerticallyMenuItem);
-		
-		JMenuItem flipAscendingMenuItem = new JMenuItem("Flip Diagonally (Ascending)");
-		flipMenu.add(flipAscendingMenuItem);
-		
-		JMenuItem flipDescendingMenuItem = new JMenuItem("Flip Diagonally (Descending)");
-		flipMenu.add(flipDescendingMenuItem);
-		
-		JMenu rotateMenu = new JMenu("Rotate");
+
 		actionsMenu.add(rotateMenu);
-		
-		JMenuItem rotate90MenuItem = new JMenuItem("90");
+
 		rotateMenu.add(rotate90MenuItem);
-		
-		JMenuItem rotate180MenuItem = new JMenuItem("180");
+
 		rotateMenu.add(rotate180MenuItem);
-		
-		JMenuItem rotate270MenuItem = new JMenuItem("270");
+
 		rotateMenu.add(rotate270MenuItem);
-		
-		JMenuItem shiftMenuItem = new JMenuItem("Shift");
+
 		actionsMenu.add(shiftMenuItem);
-		
-		JMenuItem cropOutMenuItem = new JMenuItem("Crop Out");
+
 		actionsMenu.add(cropOutMenuItem);
-		
-		JMenuItem clearMenuItem = new JMenuItem("Clear");
+
 		actionsMenu.add(clearMenuItem);
 		
 		JMenuItem propertiesMenuItem = new JMenuItem("Properties");
@@ -296,6 +293,7 @@ public class View extends JFrame {
 		canvasSizeLabel.setForeground(FOREGROUND_COLOR);
 		canvasSizeLabel.setToolTipText("Width of the canvas (in pixels)");
 		
+		//TODO: change to pixel size when checkbox below is checked
 		JLabel pixelLabel = new JLabel("Pixel Density");
 		pixelLabel.setForeground(FOREGROUND_COLOR);
 		pixelLabel.setToolTipText("Number of pixels contained horizontally in the picture");
@@ -426,10 +424,23 @@ public class View extends JFrame {
 		
 		editorCanvasPanel.setBackground(TOOLBAR_BACKGROUND_COLOR);
 		editorCanvasPanel.setPreferredSize(editorSize);
+    	
+    	JPopupMenu popupMenu = new JPopupMenu();
+    	addPopup(editorCanvasPanel, popupMenu);
+    	popupMenu.add(fillMenuItem);
+    	popupMenu.add(replaceColorMenuItem);
+    	popupMenu.add(cloneMenuItem);
+    	popupMenu.add(flipMenu);
+    	popupMenu.add(rotateMenu);
+    	popupMenu.add(shiftMenuItem);
+    	popupMenu.add(cropOutMenuItem);
+    	popupMenu.add(clearMenuItem);
     	editorCanvasPanel.setLayout(new GridLayout(editorPixelCountX, editorPixelCountY));
     	for (int i = 0; i < editorPixelCountX; i++) {
     		for (int j = 0; j < editorPixelCountY; j++) {
-    			editorCanvasPanel.add(new Pixel(i, j));
+    			Pixel pixel = new Pixel(i, j);
+    			addPopup(pixel, popupMenu);
+    			editorCanvasPanel.add(pixel);
     		}
     	}
     	
@@ -469,6 +480,7 @@ public class View extends JFrame {
 		infoPanel.add(horizontalGlue_1);
 		
 		projectTitleTextField = new JTextField();
+		projectTitleTextField.setHorizontalAlignment(SwingConstants.RIGHT);
 		projectTitleTextField.setMaximumSize(new Dimension(200, 2147483647));
 		projectTitleTextField.setPreferredSize(new Dimension(200, 20));
 		infoPanel.add(projectTitleTextField);
@@ -507,5 +519,22 @@ public class View extends JFrame {
 		paintColorButton.setBackground(currentBrushColor);
 		paintOptionsPanel.add(paintColorButton);
 		editorPanel.setLayout(gl_editorPanel);
+	}
+	private static void addPopup(Component component, final JPopupMenu popup) {
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			private void showMenu(MouseEvent e) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
 	}
 }
