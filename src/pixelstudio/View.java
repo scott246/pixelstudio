@@ -98,20 +98,19 @@ public class View extends JFrame {
 		viewInstance = this;
 		projectTitleTextField = new JTextField();
 		projectTitleTextField.setText(name);
-		editorSize = new Dimension(canvasSize, canvasSize);
+		editorSize = new Dimension(canvasSize + (4 * pixelDensity), canvasSize + (4 * pixelDensity));
 		editorPixelCount = pixelDensity;
 		editorPixelSize = canvasSize/editorPixelCount;
 		setBackground(BACKGROUND_COLOR);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Pixel Studio");
-		setSize(new Dimension(20 + (pixelDensity * editorPixelSize), (pixelDensity * editorPixelSize) + 220));
+		setSize(new Dimension(canvasSize + 100 + (pixelDensity * 4), canvasSize + 300 + (pixelDensity * 4)));
 		
 		contentPane = new JPanel();
 		contentPane.setBackground(BACKGROUND_COLOR);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new CardLayout(0, 0));		
-		contentPane.setMinimumSize(new Dimension((pixelDensity * editorPixelSize), (pixelDensity * editorPixelSize)));
+		contentPane.setLayout(new CardLayout(0, 0));
 		initializeMenuBar();
 		initializeEditorPanel();
 
