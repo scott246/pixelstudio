@@ -17,14 +17,8 @@ public class Pixel extends JPanel {
 	
 	public Pixel(int xLoc, int yLoc) {
 		super();
-		/*
-		 * int onmask = KeyEvent.SHIFT_DOWN_MASK | KeyEvent.BUTTON1_DOWN_MASK; int
-		 * offmask = KeyEvent.CTRL_DOWN_MASK; if ((event.getModifiersEx() & (onmask |
-		 * offmask)) == onmask) { ... }
-		 */
 		pixel.setBorder(viewInstance.PIXEL_BORDER);
 		pixel.addMouseListener(new MouseListener() {
-			//int ctrlClickMask = KeyEvent.CTRL_DOWN_MASK | KeyEvent.BUTTON1_DOWN_MASK;
 			@Override
 			public void mouseClicked(MouseEvent e) { }
 
@@ -84,16 +78,16 @@ public class Pixel extends JPanel {
 			pixel.setBackground(View.TRANSPARENT_COLOR_1);
 			Color previousColor = g.getColor();
 			g.setColor(View.TRANSPARENT_COLOR_2);
-			g.drawLine(0, 0, viewInstance.editorPixelWidth, viewInstance.editorPixelHeight);
-			g.drawLine(0, viewInstance.editorPixelHeight, viewInstance.editorPixelWidth, 0);
+			g.drawLine(0, 0, viewInstance.editorPixelSize, viewInstance.editorPixelSize);
+			g.drawLine(0, viewInstance.editorPixelSize, viewInstance.editorPixelSize, 0);
 			g.setColor(previousColor);
 		}
 		if (selected) {
 			Color previousColor = g.getColor();
 			g.setColor(View.FOREGROUND_COLOR);
-			g.drawRect(0, 0, viewInstance.editorPixelWidth, viewInstance.editorPixelHeight);
+			g.drawRect(0, 0, viewInstance.editorPixelSize, viewInstance.editorPixelSize);
 			g.setColor(View.SELECTION_COLOR);
-			g.fillRect(0, 0, viewInstance.editorPixelWidth, viewInstance.editorPixelHeight);
+			g.fillRect(0, 0, viewInstance.editorPixelSize, viewInstance.editorPixelSize);
 			g.setColor(previousColor);
 		}
 	}

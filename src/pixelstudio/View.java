@@ -4,7 +4,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,19 +12,15 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
@@ -34,13 +29,11 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.metal.MetalToggleButtonUI;
 
 @SuppressWarnings("serial")
 public class View extends JFrame {
 	public static View viewInstance;
-	
-	protected final int WINDOW_WIDTH = 600;
-    protected final int WINDOW_HEIGHT = 700;
     
     protected static final Color BACKGROUND_COLOR = new Color(32, 32, 32);
     protected static final Color EDITOR_BACKGROUND_COLOR = new Color(64, 64, 64);
@@ -52,12 +45,9 @@ public class View extends JFrame {
     protected static final Color TRANSPARENT_COLOR_2 = new Color(128, 128, 128);
     protected static final Color WARNING_COLOR = new Color(255, 255, 0);
     
-    //TODO: make below variables dynamic
-    protected int editorPixelCountX = 10;
-    protected int editorPixelCountY = 10;
-    protected Dimension editorSize = new Dimension(600, 600);
-    protected int editorPixelWidth = editorSize.width/editorPixelCountX;
-    protected int editorPixelHeight = editorSize.height/editorPixelCountY;
+	protected int editorPixelCount;
+    protected Dimension editorSize;
+    protected int editorPixelSize;
     
 	protected boolean leftMouseDown = false;
 	protected boolean rightMouseDown = false;
@@ -77,10 +67,6 @@ public class View extends JFrame {
 	private JPanel contentPane;
 	private JPanel launcherPanel = new JPanel();
 	private JPanel editorPanel = new JPanel();
-	private JTextField nameInput;
-	private JTextField pixelInput;
-	private JTextField canvasSizeInput;
-	private JTextField openLocationInput;
 	private JTextField projectTitleTextField;
 	
 	protected JLabel paintColorLabel = new JLabel("#XXXXXX");
@@ -106,44 +92,31 @@ public class View extends JFrame {
 	protected JMenuItem clearMenuItem = new JMenuItem("Clear");
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					View frame = new View();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
-	public View() {
+	public View(String name, int canvasSize, int pixelDensity) {
 		viewInstance = this;
+		projectTitleTextField = new JTextField();
+		projectTitleTextField.setText(name);
+		editorSize = new Dimension(canvasSize, canvasSize);
+		editorPixelCount = pixelDensity;
+		editorPixelSize = canvasSize/editorPixelCount;
 		setBackground(BACKGROUND_COLOR);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 		setTitle("Pixel Studio");
+		setSize(new Dimension(20 + (pixelDensity * editorPixelSize), (pixelDensity * editorPixelSize) + 220));
 		
 		contentPane = new JPanel();
 		contentPane.setBackground(BACKGROUND_COLOR);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new CardLayout(0, 0));
-		
+		contentPane.setLayout(new CardLayout(0, 0));		
+		contentPane.setMinimumSize(new Dimension((pixelDensity * editorPixelSize), (pixelDensity * editorPixelSize)));
 		initializeMenuBar();
-		initializeLauncherPanel();
 		initializeEditorPanel();
 
-		//TODO: change when editing launcher elements
-		launcherPanel.setVisible(false);
-		editorPanel.setVisible(true);
+		launcherPanel.setVisible(true);
+		editorPanel.setVisible(false);
 	}
 	
 	private void initializeMenuBar() {
@@ -191,33 +164,19 @@ public class View extends JFrame {
 		
 		JMenu actionsMenu = new JMenu("Actions");
 		editMenu.add(actionsMenu);
-		
 		actionsMenu.add(fillMenuItem);
-
 		actionsMenu.add(replaceColorMenuItem);
-
 		actionsMenu.add(cloneMenuItem);
-
 		actionsMenu.add(flipMenu);
-
 		flipMenu.add(flipHorizontallyMenuItem);
-
 		flipMenu.add(flipVerticallyMenuItem);
-
 		actionsMenu.add(rotateMenu);
-
 		rotateMenu.add(rotate90MenuItem);
-
 		rotateMenu.add(rotate180MenuItem);
-
 		rotateMenu.add(rotate270MenuItem);
-
 		actionsMenu.add(shiftMenuItem);
-
 		actionsMenu.add(cropOutMenuItem);
-
 		actionsMenu.add(clearMenuItem);
-		
 		JMenuItem propertiesMenuItem = new JMenuItem("Properties");
 		editMenu.add(propertiesMenuItem);
 		
@@ -229,187 +188,8 @@ public class View extends JFrame {
 		
 		JMenuItem aboutMenuItem = new JMenuItem("About");
 		helpMenu.add(aboutMenuItem);
-	}
-	
-	private void initializeLauncherPanel() {
-		launcherPanel.setBackground(BACKGROUND_COLOR);
-		contentPane.add(launcherPanel, "name_858653006200");
-		
-		JPanel newOpenRadioButtonsPanel = new JPanel();
-		newOpenRadioButtonsPanel.setBackground(TOOLBAR_BACKGROUND_COLOR);
-		
-		JPanel newOpenSelectionCardPanel = new JPanel();
-		newOpenSelectionCardPanel.setBackground(BACKGROUND_COLOR);
-		GroupLayout gl_launcherPanel = new GroupLayout(launcherPanel);
-		gl_launcherPanel.setHorizontalGroup(
-			gl_launcherPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_launcherPanel.createSequentialGroup()
-					.addGroup(gl_launcherPanel.createParallelGroup(Alignment.TRAILING)
-						.addGroup(Alignment.LEADING, gl_launcherPanel.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(newOpenRadioButtonsPanel, GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE))
-						.addGroup(gl_launcherPanel.createSequentialGroup()
-							.addGap(10)
-							.addComponent(newOpenSelectionCardPanel, GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)))
-					.addContainerGap())
-		);
-		gl_launcherPanel.setVerticalGroup(
-			gl_launcherPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_launcherPanel.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(newOpenRadioButtonsPanel, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(newOpenSelectionCardPanel, GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
-					.addContainerGap())
-		);
-		newOpenRadioButtonsPanel.setLayout(new GridLayout(1, 2, 0, 0));
-		
-		JRadioButton newRadioButton = new JRadioButton("New");
-		newRadioButton.setForeground(FOREGROUND_COLOR);
-		newRadioButton.setSelected(true);
-		newRadioButton.setBackground(newOpenRadioButtonsPanel.getBackground());
-		newOpenRadioButtonsPanel.add(newRadioButton);
-		
-		JRadioButton openRadioButton = new JRadioButton("Open");
-		openRadioButton.setForeground(FOREGROUND_COLOR);
-		openRadioButton.setSelected(false);
-		openRadioButton.setBackground(newOpenRadioButtonsPanel.getBackground());
-		newOpenRadioButtonsPanel.add(openRadioButton);
-		newOpenSelectionCardPanel.setLayout(new CardLayout(0, 0));
 
-		ButtonGroup newOpenButtonsGroup = new ButtonGroup();
-		newOpenButtonsGroup.add(newRadioButton);
-		newOpenButtonsGroup.add(openRadioButton);
-		
-		JPanel newSelectionContentPanel = new JPanel();
-		newSelectionContentPanel.setBackground(TOOLBAR_BACKGROUND_COLOR);
-		newOpenSelectionCardPanel.add(newSelectionContentPanel, "name_1335114206700");
-		
-		JLabel newNameLabel = new JLabel("Name");
-		newNameLabel.setForeground(FOREGROUND_COLOR);
-		newNameLabel.setToolTipText("Name of project");
-		
-		JLabel canvasSizeLabel = new JLabel("Canvas Size");
-		canvasSizeLabel.setForeground(FOREGROUND_COLOR);
-		canvasSizeLabel.setToolTipText("Width of the canvas (in pixels)");
-		
-		//TODO: change to pixel size when checkbox below is checked
-		JLabel pixelLabel = new JLabel("Pixel Density");
-		pixelLabel.setForeground(FOREGROUND_COLOR);
-		pixelLabel.setToolTipText("Number of pixels contained horizontally in the picture");
-		
-		JCheckBox pixelSizeCheckBox = new JCheckBox("Pixel Size");
-		pixelSizeCheckBox.setForeground(FOREGROUND_COLOR);
-		pixelSizeCheckBox.setBackground(newSelectionContentPanel.getBackground());
-		pixelSizeCheckBox.setToolTipText("Forces the width and height of the canvas and pixel density to be equal");
-		
-		JButton createNewProjectButton = new JButton("Create");
-		
-		nameInput = new JTextField();
-		nameInput.setColumns(10);
-		
-		pixelInput = new JTextField();
-		pixelInput.setColumns(10);
-		
-		canvasSizeInput = new JTextField();
-		canvasSizeInput.setColumns(10);
-		GroupLayout gl_newSelectionContentPanel = new GroupLayout(newSelectionContentPanel);
-		gl_newSelectionContentPanel.setHorizontalGroup(
-			gl_newSelectionContentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_newSelectionContentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_newSelectionContentPanel.createSequentialGroup()
-							.addComponent(pixelSizeCheckBox)
-							.addPreferredGap(ComponentPlacement.RELATED, 410, Short.MAX_VALUE)
-							.addComponent(createNewProjectButton))
-						.addGroup(gl_newSelectionContentPanel.createSequentialGroup()
-							.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(newNameLabel)
-								.addComponent(canvasSizeLabel)
-								.addComponent(pixelLabel))
-							.addGap(21)
-							.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(canvasSizeInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(nameInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(pixelInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGap(352)))
-					.addContainerGap())
-		);
-		gl_newSelectionContentPanel.setVerticalGroup(
-			gl_newSelectionContentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_newSelectionContentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(newNameLabel)
-						.addComponent(nameInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(canvasSizeLabel)
-						.addComponent(canvasSizeInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(pixelLabel)
-						.addComponent(pixelInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED, 355, Short.MAX_VALUE)
-					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(pixelSizeCheckBox)
-						.addComponent(createNewProjectButton))
-					.addContainerGap())
-		);
-		newSelectionContentPanel.setLayout(gl_newSelectionContentPanel);
-		
-		JPanel openSelectionContentPanel = new JPanel();
-		openSelectionContentPanel.setBackground(TOOLBAR_BACKGROUND_COLOR);
-		newOpenSelectionCardPanel.add(openSelectionContentPanel, "name_1413884164500");
-		
-		JLabel openLabel = new JLabel("Open");
-		
-		openLocationInput = new JTextField();
-		openLocationInput.setColumns(10);
-		
-		JButton browseButton = new JButton("Browse");
-		
-		JButton openButton = new JButton("Open");
-		
-		JList<String> recentlyOpenedList = new JList<>();
-		
-		JLabel recentLabel = new JLabel("Recent");
-		GroupLayout gl_openSelectionContentPanel = new GroupLayout(openSelectionContentPanel);
-		gl_openSelectionContentPanel.setHorizontalGroup(
-			gl_openSelectionContentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_openSelectionContentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_openSelectionContentPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(recentlyOpenedList, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 384, Short.MAX_VALUE)
-						.addGroup(Alignment.LEADING, gl_openSelectionContentPanel.createSequentialGroup()
-							.addComponent(openLabel)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(openLocationInput, GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(browseButton))
-						.addComponent(openButton)
-						.addComponent(recentLabel, Alignment.LEADING))
-					.addContainerGap())
-		);
-		gl_openSelectionContentPanel.setVerticalGroup(
-			gl_openSelectionContentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_openSelectionContentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_openSelectionContentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(openLabel)
-						.addComponent(openLocationInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(browseButton))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(recentLabel)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(recentlyOpenedList, GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(openButton)
-					.addContainerGap())
-		);
-		openSelectionContentPanel.setLayout(gl_openSelectionContentPanel);
-		launcherPanel.setLayout(gl_launcherPanel);
+		LauncherView.launcherInstance.dispose();
 	}
 	
 	private void initializeEditorPanel() {
@@ -424,9 +204,9 @@ public class View extends JFrame {
 		
 		editorCanvasPanel.setBackground(TOOLBAR_BACKGROUND_COLOR);
 		editorCanvasPanel.setPreferredSize(editorSize);
-    	editorCanvasPanel.setLayout(new GridLayout(editorPixelCountX, editorPixelCountY));
-    	for (int i = 0; i < editorPixelCountX; i++) {
-    		for (int j = 0; j < editorPixelCountY; j++) {
+    	editorCanvasPanel.setLayout(new GridLayout(editorPixelCount, editorPixelCount));
+    	for (int i = 0; i < editorPixelCount; i++) {
+    		for (int j = 0; j < editorPixelCount; j++) {
     			editorCanvasPanel.add(new Pixel(i, j));
     		}
     	}
@@ -466,7 +246,6 @@ public class View extends JFrame {
 		Component horizontalGlue_1 = Box.createHorizontalGlue();
 		infoPanel.add(horizontalGlue_1);
 		
-		projectTitleTextField = new JTextField();
 		projectTitleTextField.setHorizontalAlignment(SwingConstants.RIGHT);
 		projectTitleTextField.setBorder(null);
 		projectTitleTextField.setMaximumSize(new Dimension(200, 2147483647));
@@ -491,8 +270,17 @@ public class View extends JFrame {
 			}
 		});
 		paintSelectModeToggleButton.setSelected(true);
-		ViewActions.setPaintState(true);
+		paintSelectModeToggleButton.setBackground(View.TRANSPARENT_COLOR_1);
+		paintSelectModeToggleButton.setUI(new MetalToggleButtonUI() {
+			@Override
+			protected Color getSelectColor() {
+				return View.TRANSPARENT_COLOR_2;
+			}
+		});
+		paintSelectModeToggleButton.setForeground(View.FOREGROUND_COLOR);
 		paintSelectModeToggleButton.setFocusPainted(false);
+		paintSelectModeToggleButton.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		ViewActions.setPaintState(true);
 		paintSelectModeToggleButton.setPreferredSize(new Dimension(120, 23));
 		paintOptionsPanel.add(paintSelectModeToggleButton);
 		

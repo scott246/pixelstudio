@@ -47,13 +47,10 @@ public class ViewActions {
 		int red = rgb.getRed();
 		int green = rgb.getGreen();
 		int blue = rgb.getBlue();
-		if ((red >= 0 && red < 256) && (green >= 0 && green < 256) && (blue >= 0 && blue < 256)) {
-			hex += twoDigitHex(red);
-			hex += twoDigitHex(green);
-			hex += twoDigitHex(blue);
-			return hex;
-		}
-		return null;
+		hex += twoDigitHex(red);
+		hex += twoDigitHex(green);
+		hex += twoDigitHex(blue);
+		return hex;
 	}
 	
 	private static String twoDigitHex(int integer) {
