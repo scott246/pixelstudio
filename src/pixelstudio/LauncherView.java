@@ -20,9 +20,12 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SpinnerNumberModel;
+
 import java.awt.CardLayout;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
 
 public class LauncherView extends JFrame {
 
@@ -33,13 +36,14 @@ public class LauncherView extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField canvasSizeInput;
-	private JTextField newNameInput;
-	private JTextField pixelDensityInput;
+	private static JTextField newNameInput;
+	private static JSpinner pixelSizeSpinner;
+	private static JSpinner pixelDensitySpinner;
 	private JTextField browseInput;
 
-	private final int MAX_TITLE_LENGTH = 50;
-	private final int MAX_CANVAS_SIZE = 1000;
+	private static final int MAX_TITLE_LENGTH = 50;
+	private static final int MAX_PIXEL_SIZE = 500;
+	private static final int MAX_PIXEL_DENSITY = 1000;
 
 	/**
 	 * Launch the application.
@@ -48,8 +52,8 @@ public class LauncherView extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					LauncherView frame = launcherInstance;
-					frame.setVisible(true);
+					launcherInstance.setVisible(true);
+					newNameInput.grabFocus();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -90,6 +94,8 @@ public class LauncherView extends JFrame {
 		openSelectionContentPanel.setBackground(Color.DARK_GRAY);
 		newOpenSelectionCardPanel.add(openSelectionContentPanel, "name_162067153370100");
 
+		JButton createNewProjectButton = new JButton("Create");
+		getRootPane().setDefaultButton(createNewProjectButton);
 		JRadioButton newRadioButton = new JRadioButton("New");
 		newRadioButton.setSelected(true);
 		newRadioButton.setForeground(Color.WHITE);
@@ -101,12 +107,14 @@ public class LauncherView extends JFrame {
 				if (newRadioButton.isSelected()) {
 					newSelectionContentPanel.setVisible(true);
 					openSelectionContentPanel.setVisible(false);
+					getRootPane().setDefaultButton(createNewProjectButton);
 				}
 			}
 			
 		});
 		newOpenRadioButtonsPanel.add(newRadioButton);
 		
+		JButton openButton = new JButton("Open");
 		JRadioButton openRadioButton = new JRadioButton("Open");
 		openRadioButton.setSelected(false);
 		openRadioButton.setForeground(Color.WHITE);
@@ -118,6 +126,7 @@ public class LauncherView extends JFrame {
 				if (openRadioButton.isSelected()) {
 					openSelectionContentPanel.setVisible(true);
 					newSelectionContentPanel.setVisible(false);
+					getRootPane().setDefaultButton(openButton);
 				}
 			}
 			
@@ -128,13 +137,12 @@ public class LauncherView extends JFrame {
 		newOpenButtonsGroup.add(newRadioButton);
 		newOpenButtonsGroup.add(openRadioButton);
 		
-		JButton createNewProjectButton = new JButton("Create");
 		createNewProjectButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String projectTitle;
-				int canvasSize;
+				int pixelSize;
 				int pixelDensity;
 				projectTitle = newNameInput.getText();
 				if (projectTitle.length() > MAX_TITLE_LENGTH) {
@@ -147,28 +155,24 @@ public class LauncherView extends JFrame {
 				}
 
 				try {
-					canvasSize = Integer.parseInt(canvasSizeInput.getText());
-					if (canvasSize > MAX_CANVAS_SIZE) {
-						JOptionPane.showMessageDialog(launcherInstance, "Canvas size can be up to " + MAX_CANVAS_SIZE + "px.");
+					pixelSize = (int)pixelSizeSpinner.getValue();
+					if (pixelSize > MAX_PIXEL_SIZE) {
+						JOptionPane.showMessageDialog(launcherInstance, "Pixel size can be up to " + MAX_PIXEL_SIZE + "px.");
 						return;
 					}
-					if (canvasSize <= 0) {
-						JOptionPane.showMessageDialog(launcherInstance, "Invalid canvas size.");
+					if (pixelSize <= 0) {
+						JOptionPane.showMessageDialog(launcherInstance, "Invalid pixel size.");
 						return;
 					}
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(launcherInstance, "Invalid canvas size.");
+					JOptionPane.showMessageDialog(launcherInstance, "Invalid pixel size.");
 					return;
 				}
 				
 				try {
-					if (pixelDensityInput.getText() == "" || pixelDensityInput.getText() == null){
-						JOptionPane.showMessageDialog(launcherInstance, "Pixel density is required.");
-						return;
-					}
-					pixelDensity = Integer.parseInt(pixelDensityInput.getText());
-					if (pixelDensity > canvasSize) {
-						JOptionPane.showMessageDialog(launcherInstance, "You cannot have a pixel density larger than the size of the canvas.");
+					pixelDensity = (int)pixelDensitySpinner.getValue();
+					if (pixelDensity > MAX_PIXEL_DENSITY){
+						JOptionPane.showMessageDialog(launcherInstance, "Pixel density can be up to " + MAX_PIXEL_DENSITY + ".");
 						return;
 					}
 					if (pixelDensity <= 0) {
@@ -179,7 +183,7 @@ public class LauncherView extends JFrame {
 					JOptionPane.showMessageDialog(launcherInstance, "Invalid pixel density.");
 					return;
 				}
-				launchApplication(projectTitle, canvasSize, pixelDensity);
+				launchApplication(projectTitle, pixelSize, pixelDensity);
 			}
 			
 		});
@@ -188,22 +192,20 @@ public class LauncherView extends JFrame {
 		newNameLabel.setToolTipText("Name of project");
 		newNameLabel.setForeground(Color.WHITE);
 		
-		JLabel canvasSizeLabel = new JLabel("Canvas Size");
-		canvasSizeLabel.setToolTipText("Width of the canvas (in pixels)");
-		canvasSizeLabel.setForeground(Color.WHITE);
+		JLabel pixelSizeLabel = new JLabel("Pixel Size");
+		pixelSizeLabel.setToolTipText("Width and height of each pixel");
+		pixelSizeLabel.setForeground(Color.WHITE);
 		
-		JLabel pixelLabel = new JLabel("Pixel Density");
-		pixelLabel.setToolTipText("Number of pixels contained horizontally in the picture");
-		pixelLabel.setForeground(Color.WHITE);
-		
-		canvasSizeInput = new JTextField();
-		canvasSizeInput.setColumns(35);
+		JLabel pixelDensityLabel = new JLabel("Pixel Density");
+		pixelDensityLabel.setToolTipText("Number of pixels contained horizontally and vertically in the picture");
+		pixelDensityLabel.setForeground(Color.WHITE);
 		
 		newNameInput = new JTextField();
 		newNameInput.setColumns(35);
 		
-		pixelDensityInput = new JTextField();
-		pixelDensityInput.setColumns(35);
+		pixelSizeSpinner = new JSpinner(new SpinnerNumberModel(16,1,MAX_PIXEL_SIZE,1));
+		pixelDensitySpinner = new JSpinner(new SpinnerNumberModel(16,1,MAX_PIXEL_DENSITY,1));
+		
 		GroupLayout gl_newSelectionContentPanel = new GroupLayout(newSelectionContentPanel);
 		gl_newSelectionContentPanel.setHorizontalGroup(
 			gl_newSelectionContentPanel.createParallelGroup(Alignment.LEADING)
@@ -213,13 +215,13 @@ public class LauncherView extends JFrame {
 						.addGroup(gl_newSelectionContentPanel.createSequentialGroup()
 							.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.LEADING)
 								.addComponent(newNameLabel)
-								.addComponent(canvasSizeLabel)
-								.addComponent(pixelLabel))
+								.addComponent(pixelSizeLabel)
+								.addComponent(pixelDensityLabel))
 							.addGap(21)
-							.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(newNameInput, GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
-								.addComponent(canvasSizeInput, GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
-								.addComponent(pixelDensityInput, GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)))
+							.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(pixelDensitySpinner, GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
+								.addComponent(pixelSizeSpinner, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
+								.addComponent(newNameInput, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)))
 						.addComponent(createNewProjectButton, Alignment.TRAILING))
 					.addContainerGap())
 		);
@@ -232,13 +234,13 @@ public class LauncherView extends JFrame {
 						.addComponent(newNameInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(canvasSizeLabel)
-						.addComponent(canvasSizeInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(pixelSizeLabel)
+						.addComponent(pixelSizeSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_newSelectionContentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(pixelLabel)
-						.addComponent(pixelDensityInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(pixelDensityLabel)
+						.addComponent(pixelDensitySpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
 					.addComponent(createNewProjectButton)
 					.addContainerGap())
 		);
@@ -251,7 +253,6 @@ public class LauncherView extends JFrame {
 		
 		JButton browseButton = new JButton("Browse");
 		
-		JButton openButton = new JButton("Open");
 		GroupLayout gl_openSelectionContentPanel = new GroupLayout(openSelectionContentPanel);
 		gl_openSelectionContentPanel.setHorizontalGroup(
 			gl_openSelectionContentPanel.createParallelGroup(Alignment.TRAILING)
@@ -282,11 +283,11 @@ public class LauncherView extends JFrame {
 		openSelectionContentPanel.setLayout(gl_openSelectionContentPanel);
 	}
 
-	private void launchApplication(String name, int canvasSize, int pixelDensity) {
+	private void launchApplication(String name, int pixelSize, int pixelDensity) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					View frame = new View(name, canvasSize, pixelDensity);
+					View frame = new View(name, pixelSize, pixelDensity);
 					frame.setVisible(true);
 					launcherInstance.setVisible(false);
 				} catch (Exception e) {
@@ -295,5 +296,4 @@ public class LauncherView extends JFrame {
 			}
 		});
 	}
-
 }

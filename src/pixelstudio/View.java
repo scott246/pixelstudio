@@ -46,7 +46,6 @@ public class View extends JFrame {
     protected static final Color WARNING_COLOR = new Color(255, 255, 0);
     
 	protected int editorPixelCount;
-    protected Dimension editorSize;
     protected int editorPixelSize;
     
 	protected boolean leftMouseDown = false;
@@ -69,9 +68,9 @@ public class View extends JFrame {
 	private JPanel editorPanel = new JPanel();
 	private JTextField projectTitleTextField;
 	
-	protected JLabel paintColorLabel = new JLabel("#XXXXXX");
-	protected JLabel helpTextLabel = new JLabel("Help Text");
-	protected JLabel mouseLocationLabel = new JLabel("X:Y");
+	protected JLabel paintColorLabel = new JLabel("#000000");
+	protected JLabel helpTextLabel = new JLabel("");
+	protected JLabel mouseLocationLabel = new JLabel("0:0");
 	protected JPanel editorCanvasPanel = new JPanel();
 	protected JButton paintColorButton = new JButton();
 	protected JButton saveButton = new JButton();
@@ -94,17 +93,16 @@ public class View extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public View(String name, int canvasSize, int pixelDensity) {
+	public View(String name, int pixelSize, int pixelDensity) {
 		viewInstance = this;
 		projectTitleTextField = new JTextField();
 		projectTitleTextField.setText(name);
-		editorSize = new Dimension(canvasSize + (4 * pixelDensity), canvasSize + (4 * pixelDensity));
 		editorPixelCount = pixelDensity;
-		editorPixelSize = canvasSize/editorPixelCount;
+		editorPixelSize = pixelSize;
 		setBackground(BACKGROUND_COLOR);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Pixel Studio");
-		setSize(new Dimension(canvasSize + 100 + (pixelDensity * 4), canvasSize + 300 + (pixelDensity * 4)));
+		setLocationRelativeTo(null);
 		
 		contentPane = new JPanel();
 		contentPane.setBackground(BACKGROUND_COLOR);
@@ -113,6 +111,7 @@ public class View extends JFrame {
 		contentPane.setLayout(new CardLayout(0, 0));
 		initializeMenuBar();
 		initializeEditorPanel();
+		pack();
 
 		launcherPanel.setVisible(true);
 		editorPanel.setVisible(false);
@@ -202,13 +201,12 @@ public class View extends JFrame {
 		infoPanel.setBackground(TOOLBAR_BACKGROUND_COLOR);
 		
 		editorCanvasPanel.setBackground(TOOLBAR_BACKGROUND_COLOR);
-		editorCanvasPanel.setPreferredSize(editorSize);
     	editorCanvasPanel.setLayout(new GridLayout(editorPixelCount, editorPixelCount));
     	for (int i = 0; i < editorPixelCount; i++) {
     		for (int j = 0; j < editorPixelCount; j++) {
     			editorCanvasPanel.add(new Pixel(i, j));
     		}
-    	}
+		}
     	
 		GroupLayout gl_editorPanel = new GroupLayout(editorPanel);
 		gl_editorPanel.setHorizontalGroup(
@@ -247,7 +245,6 @@ public class View extends JFrame {
 		
 		projectTitleTextField.setHorizontalAlignment(SwingConstants.RIGHT);
 		projectTitleTextField.setBorder(null);
-		projectTitleTextField.setMaximumSize(new Dimension(200, 2147483647));
 		projectTitleTextField.setPreferredSize(new Dimension(200, 20));
 		infoPanel.add(projectTitleTextField);
 		projectTitleTextField.setColumns(10);
@@ -352,5 +349,6 @@ public class View extends JFrame {
 		paintColorButton.setBackground(currentBrushColor);
 		paintOptionsPanel.add(paintColorButton);
 		editorPanel.setLayout(gl_editorPanel);
+		editorPanel.setPreferredSize(new Dimension((editorPixelCount * editorPixelSize + 300), (editorPixelCount * editorPixelSize + 300)));
 	}
 }
